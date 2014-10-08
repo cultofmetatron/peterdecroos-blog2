@@ -1,6 +1,9 @@
 ---
 
-layout: post title: "On this, protototypes, and dunderheads" date: 2013-03-31 23:34 comments: true
+layout: post
+title: "On this, protototypes, and dunderheads"
+date: 2013-03-31 23:34
+comments: true
 
 categories: Javascript, prototypes
 ----------------------------------

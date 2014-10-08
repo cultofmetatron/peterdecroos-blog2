@@ -1,6 +1,9 @@
 ---
 
-layout: post title: "Quicksort Algorithm in Javascript" date: 2013-02-14 18:49 comments: true
+layout: post
+title: "Quicksort Algorithm in Javascript"
+date: 2013-02-14 18:49
+comments: true
 
 categories: javascript algorithms sorting
 -----------------------------------------

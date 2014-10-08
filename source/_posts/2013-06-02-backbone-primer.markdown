@@ -1,6 +1,9 @@
 ---
 
-layout: post title: "Backbone, a short primer - Part 1: Models and Events" date: 2013-06-02 14:42 comments: true
+layout: post
+title: "Backbone, a short primer - Part 1: Models and Events"
+date: 2013-06-02 14:42
+comments: true
 
 categories: javascript backbone.js models mvc
 ---------------------------------------------

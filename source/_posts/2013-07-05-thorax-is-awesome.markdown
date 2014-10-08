@@ -1,6 +1,9 @@
 ---
 
-layout: post title: "Thorax is Awesome" date: 2013-07-05 13:45 comments: true
+layout: post
+title: "Thorax is Awesome"
+date: 2013-07-05 13:45
+comments: true
 
 categories: backbone thorax defineProperty
 ------------------------------------------

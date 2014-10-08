@@ -1,6 +1,9 @@
 ---
 
-layout: post title: "sorting algorithms in python - part 1" date: 2012-09-10 00:11 comments: true
+layout: post
+title: "sorting algorithms in python - part 1"
+date: 2012-09-10 00:11
+comments: true
 
 categories: algorithms sorting python
 -------------------------------------

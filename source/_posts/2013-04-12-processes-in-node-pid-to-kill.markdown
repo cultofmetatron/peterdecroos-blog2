@@ -1,6 +1,9 @@
 ---
 
-layout: post title: "processes in node Part 2: pid to kill" date: 2013-04-12 10:22 comments: true
+layout: post
+title: "processes in node Part 2: pid to kill"
+date: 2013-04-12 10:22
+comments: true
 
 categories: node process fork
 -----------------------------

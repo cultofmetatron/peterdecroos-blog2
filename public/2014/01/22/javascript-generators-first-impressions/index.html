@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>javascript generators: first impressions | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Ecmascript 6 (harmony) is coming out soon and one of the most exciting featuresit offers are generators. Generators are a minimalist flow control system that givesa much finer grained level of control">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript generators: first impressions">
+<meta property="og:url" content="http://yoursite.com/2014/01/22/javascript-generators-first-impressions/">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Ecmascript 6 (harmony) is coming out soon and one of the most exciting featuresit offers are generators. Generators are a minimalist flow control system that givesa much finer grained level of control">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="javascript generators: first impressions">
+<meta name="twitter:description" content="Ecmascript 6 (harmony) is coming out soon and one of the most exciting featuresit offers are generators. Generators are a minimalist flow control system that givesa much finer grained level of control">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-javascript-generators-first-impressions" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/01/22/javascript-generators-first-impressions/" class="article-date">
+  <time datetime="2014-01-23T00:03:00.000Z" itemprop="datePublished">Jan 22 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/generators-promises/">generators promises</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      javascript generators: first impressions
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Ecmascript 6 (harmony) is coming out soon and one of the most exciting features<br>it offers are generators. Generators are a minimalist flow control system that gives<br>a much finer grained level of control than we were afforded up till now.</p>
+<blockquote>
+<p>Note: the code in this blog will only run in node v0.11.x when run as —harmony.</p>
+</blockquote>
+<p>Like a function, a generator is an object that declares some behavior. Its first class<br>just like javascript functions and you can pass it around as values and return them from other<br>functions.</p>
+<p>A generator is declared like a function only with a ‘*’ before the parens.<br>We then create an instance of the generator by calling it.</p>
+<p>Here’s a basic example.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">var myGenerator = function *() {</div><div class="line">  var foo = yield 5;</div><div class="line">  console.log('this doesn't get written until the second call to next()');</div><div class="line">};</div><div class="line"></div><div class="line">var gen = myGenerator();</div><div class="line">var state = gen.next();</div><div class="line">console.log(state.value) //=&gt; 5</div></pre></td></tr></table></figure>
+
+<p>When we run gen.next(), the code executes until we get to yield. The generator<br>then stops which is why the console.log() does not get called. The state of the<br>generator is returned by next which gives us two things.</p>
+<ol>
+<li>state.value: the value on the right side of the yield; in this case 5.</li>
+<li>state.done: a boolean that returns true if there are no more yields in the generator.</li>
+</ol>
+<p>We’ve called gen.next() the one time. The second time we call gen.next(), we have the option<br>of passing in an argument to it that will be returned by yield inside the generator.</p>
+<p>This example shows a more advanced example of bidirectional passing. </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> myGenerator = <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> firstWord = <span class="keyword">yield</span> <span class="number">5</span>;</div><div class="line">  <span class="built_in">console</span>.log(firstWord); <span class="comment">//=&gt; "hello"</span></div><div class="line">  <span class="keyword">var</span> secondWord = <span class="keyword">yield</span> <span class="number">10</span>;</div><div class="line">  <span class="built_in">console</span>.log(secondWord); <span class="comment">//=&gt; "world"</span></div><div class="line">};</div><div class="line"></div><div class="line"><span class="keyword">var</span> gen = myGenerator();</div><div class="line"><span class="keyword">var</span> state = gen.next();</div><div class="line"><span class="built_in">console</span>.log(state.value); <span class="comment">//=&gt; 5</span></div><div class="line">state = gen.next(<span class="string">"hello"</span>);</div><div class="line"><span class="comment">//=&gt; 'hello' gets printed to the screen from inside the generator</span></div><div class="line"><span class="built_in">console</span>.log(state.value); <span class="comment">//=&gt; 10</span></div><div class="line"><span class="built_in">console</span>.log(state.done); <span class="comment">//=&gt; false</span></div><div class="line">state = gen.next(<span class="string">'world'</span>);</div><div class="line"><span class="comment">//=&gt; 'world' gets printed</span></div><div class="line"><span class="built_in">console</span>.log(state.value); <span class="comment">//=&gt; 10</span></div><div class="line"><span class="built_in">console</span>.log(state.done);  <span class="comment">//=&gt; true</span></div></pre></td></tr></table></figure>
+
+<p>One of the biggest growing pains of javascript development is wrapping one’s<br>head around async programming and functions run asyncronously. Promises give us a<br>value that represents the eventual value returned from an asynchronous function.</p>
+<p>Promises are promised in ecmascript 6 but they aren’t available when I run node 0.11<br>with —harmony  yet so I use <a href="https://github.com/petkaantonov/bluebird" target="_blank" rel="external">Bluebird</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Promise = <span class="built_in">require</span>(<span class="string">'bluebird'</span>);</div><div class="line"></div><div class="line"><span class="comment">//extends node's fileSytem with versions of the async functions that return promises</span></div><div class="line"><span class="comment">//the promisified versions are the original name + 'Async'</span></div><div class="line"><span class="keyword">var</span> fs = Promise.promisifyAll(<span class="built_in">require</span>(<span class="string">'fs'</span>));</div><div class="line"></div><div class="line">fs.readFileAsync(<span class="string">'.gitignore'</span>,  <span class="string">'utf8'</span>).then(<span class="function"><span class="keyword">function</span><span class="params">(contents)</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(contents); <span class="comment">// prints the contents of the .gitignore file.</span></div><div class="line">});</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(<span class="string">'this runs before the callback passed to "then" which is counterintuitive.'</span>)</div></pre></td></tr></table></figure>
+
+<p>This code Works because when the function is called, it creates a closure that doesn’t get<br>garbage collected because the function passed to the promise retains a reference to this scope.<br>When its called, it can operate on variables in this containing scope. However we<br>cannot return to the original function call. Thus Unless you are used to thinking about promises,<br>its a bit unintuitive that the console.log on the following line runs before the callback passed<br>to the then() handler of the promise.</p>
+<p>Generators on the other hand, let us FREEZE the execution context until the file resolves.</p>
+<p>There’s an excellent library called<br><a href="https://github.com/visionmedia/co" target="_blank" rel="external">co</a> from the creator of express that allows<br>us to create coroutines using generators. thus we could write the previous code using<br>generators.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Promise = <span class="built_in">require</span>(<span class="string">'bluebird'</span>);</div><div class="line"><span class="keyword">var</span> fs = Promise.promisifyAll(<span class="built_in">require</span>(<span class="string">'fs'</span>));</div><div class="line"><span class="keyword">var</span> co = <span class="built_in">require</span>(<span class="string">'co'</span>);</div><div class="line"></div><div class="line">co(<span class="function"><span class="keyword">function</span> *<span class="params">()</span></span>{</div><div class="line">  <span class="keyword">var</span> a = <span class="keyword">yield</span> fs.readFileAsync(<span class="string">'.gitignore'</span>,  <span class="string">'utf8'</span>);</div><div class="line">  <span class="built_in">console</span>.log(a); <span class="comment">//this doesn't run until the previous function resolves.</span></div><div class="line">  <span class="keyword">var</span> c = <span class="keyword">yield</span> fs.readFileAsync(<span class="string">'package.json'</span>, <span class="string">'utf8'</span>);</div><div class="line">  <span class="built_in">console</span>.log(a);</div><div class="line">  <span class="built_in">console</span>.log(c);</div><div class="line">  <span class="keyword">return</span>;</div><div class="line">})();</div></pre></td></tr></table></figure>
+
+<p>This is pretty exciting, This Asyncrouous code looks downright synchronous. Its also running<br>in its own context so it doesn’t block the event loop. Within the generator, we can write<br>much more fine grained flow control for asynchronous functions.</p>
+<p>That said, how does co work? The basic premise is that we use yield to pass back the promise<br>into co where it waits till the function resolves. Then we call the next() of this function<br>passing in the value from the resolved promise.</p>
+<p>co itself is extremely flexible allowing you to pass in thunks, or A+spec promises into<br>yield. Here I’ll demonstrate a simplified version that can accept only promises.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> co = <span class="function"><span class="keyword">function</span><span class="params">(fngen)</span> </span>{</div><div class="line">  <span class="comment">/*</span></div><div class="line">  next takes a instatiated generator and calls</div><div class="line">  and a value returned from calling next on it</div><div class="line">  gen is an instance of a generator</div><div class="line">  yieldable is the value returned from calling gen.next()</div><div class="line">  */</div><div class="line">  <span class="keyword">var</span> next = <span class="function"><span class="keyword">function</span><span class="params">(gen, yieldable)</span> </span>{</div><div class="line">    <span class="keyword">if</span> (! yieldable.done) { <span class="comment">//if </span></div><div class="line">      <span class="comment">//we assume yieldable.value is a promise so we call then() to get the value</span></div><div class="line">      yieldable.value.then(<span class="function"><span class="keyword">function</span><span class="params">(val)</span> </span>{</div><div class="line">        <span class="comment">/*</span></div><div class="line">        we call next on gen and pass in the value into gen.next() to </div><div class="line">        inject the value back into out coroutine where it gets returned</div><div class="line">        by the yield in the generator. </div><div class="line">        </div><div class="line">        By call gen.next(val), gen resumes execustion passing val back </div><div class="line">        and gen.next() return when it hits the next yield keyword returning </div><div class="line">        the value passed in to yield.</div><div class="line">        */</div><div class="line">        next(gen, gen.next(val));</div><div class="line">      });</div><div class="line">    }</div><div class="line">  };</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="comment">//instatiate the generator</span></div><div class="line">    <span class="keyword">var</span> gensym = fngen();</div><div class="line">    <span class="comment">//get the first yieldable</span></div><div class="line">    <span class="keyword">var</span> yieldable = gensym.next();</div><div class="line">    <span class="keyword">if</span> (!yieldable.done) {</div><div class="line">      next(gensym, yieldable);</div><div class="line">    }</div><div class="line">  };</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>The concept is pretty simple, yield passed back the value on the right to gen.next()<br>which it returns. The value we pass into the gen.next call to gen.next() becomes<br>the value returned by yield. Sorta like a zig zag or a needle stitching.</p>
+<p>I’m excited to see some of the new projects that will take advantage of this new<br>ecmascript 6 feature. One big example comming to mind is the new koa framework. Unlike<br>its predecessor express/connect, Koa is a set of pluggable middleware components<br>that utilize generators heavily for flow control.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/01/22/javascript-generators-first-impressions/" data-id="a2xfdd364k8yd30t" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/02/01/koa-zero-to-todo-list/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          koa: zero to todo list
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/01/06/lets-build-a-backbone-based-framework/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">lets build a backbone based framework!!</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Javascript-prototypes/">Javascript, prototypes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/algorithms-sorting-python/">algorithms sorting python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-javascript/">backbone javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-thorax-defineProperty/">backbone thorax defineProperty</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/functional-programming-ecmascript6-javascript-generators/">functional-programming ecmascript6 javascript generators</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/generators-promises/">generators promises</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-algorithms-sorting/">javascript algorithms sorting</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-backbone-js-models-mvc/">javascript backbone.js models mvc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-scoping/">javascript scoping</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/koa-generators-javascript-harmony-ecmascript6/">koa generators javascript harmony ecmascript6</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-javascript-systems-process/">node javascript systems process</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-process-fork/">node process fork</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/09/">September 2012</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2014/02/08/functional-programming-with-ecmascript6-generators/">Functional programming with ecmascript6 generators</a>
+          </li>
+        
+          <li>
+            <a href="/2014/02/01/koa-zero-to-todo-list/">koa: zero to todo list</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/22/javascript-generators-first-impressions/">javascript generators: first impressions</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/06/lets-build-a-backbone-based-framework/">lets build a backbone based framework!!</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/16/lexically-scope-like-a-boss/">How to lexically scope like a boss</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>

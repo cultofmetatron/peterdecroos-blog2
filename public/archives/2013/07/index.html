@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Archives: 2013/7 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/archives/2013/07/">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+<meta name="twitter:description">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-lexically-scope-like-a-boss" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/07/16/lexically-scope-like-a-boss/" class="article-date">
+  <time datetime="2013-07-17T05:27:00.000Z" itemprop="datePublished">Jul 16 2013</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/javascript-scoping/">javascript scoping</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/07/16/lexically-scope-like-a-boss/">How to lexically scope like a boss</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Lexical scoping (scoping accordinng to location in source code) is probably one of<br>the most powerful features a programming language can have.<br>Today, I’m going to show you how to use lexical scoping to<br>create powerful abstractions. I will begin by introducing the concept of scope.<br>From there I will introduce a few rules for figuring out the scope of your variables<br>in javascript and then introduce the concept of a closure and how it will make you<br>positivly badass at Javascript.</p>
+<h2 id="What_is_a_scope?">What is a scope?</h2>
+<p>I’m assuming you have written code before. Hell, I’d dare assume you’ve written a <em>var.</em></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> variableName = <span class="string">"variable value"</span>;</div></pre></td></tr></table></figure>
+
+<p>What does it mean to use the <em>var</em> keyword? As you may know, good javascript has you<br>prepend all your variables with var. Most will also advocate wrapping all your code in<br>an immediatly invoked function.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//this is being declared in the global scope.</span></div><div class="line"><span class="comment">//its functionally equivilant to window.foo or just plain foo</span></div><div class="line"><span class="keyword">var</span> foo = <span class="string">"super bar"</span>;</div><div class="line"></div><div class="line">(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> foo = <span class="string">"inner bar"</span>;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'this foo refers to the foo inside this function '</span>, foo);</div><div class="line">})();</div><div class="line"><span class="comment">/* I don't always create inline annonymous functions, but when I do, I</span></div><div class="line">immediatly invoke them. Live dynamically my friends &lt;3 */</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(<span class="string">'this one will print the top level: '</span>, foo);</div></pre></td></tr></table></figure>
+
+<p>Let’s start with this relativly simple example to begin growing some understanding.<br>Internally, the interpreter/compiler represents scopes with a tree (in simple cases, just a linked list).<br>At each node in the tree is a dictionary of values that we refer to with the variable<br>names from your source code. When we refer to foo, the interpreter (or the compiler at compile time)<br>will look for it in the most immediate scope. If it doesn’t find a value there, it will look<br>up the scope tree until it finds a node with a matching key/val and uses it for the current instruction.</p>
+<p>Look at that previous code sample. If there wasn’t a <em>var foo</em> at the top of the function,<br>The interpreter would look for scope[foo] and find that it isn’t there. It would then look for an<br>entry named <em>foo</em> in the current scope’s parent. That is the global scope where<br>the variable foo exists. It refers to the value “super bar.”</p>
+<h2 id="Creating_scopes_and_determining_the_current_scope’s_parent">Creating scopes and determining the current scope’s parent</h2>
+<p>The rules for creating scopes differ between languages. In Javascript, we start new scopes with a<br>function.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> foo = <span class="string">"global scope"</span>;</div><div class="line"><span class="keyword">var</span> goo = <span class="string">"ber"</span>;</div><div class="line">(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> foo = <span class="string">"inner scope"</span>;</div><div class="line">  (<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="keyword">var</span> foo = <span class="string">"super inner scope bro!"</span>;</div><div class="line">  })();</div><div class="line">})();</div></pre></td></tr></table></figure>
+
+<p>This creates a tree with three nodes we can visually represent<br>in pseudo-coffeescript.</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">scope_chain = <span class="attribute">global</span>:</div><div class="line">                 <span class="attribute">variables</span>:</div><div class="line">                   <span class="attribute">foo</span>: <span class="string">"global scope"</span>;</div><div class="line">                   <span class="attribute">goo</span>: <span class="string">"ber"</span></div><div class="line">                 <span class="attribute">children</span>:</div><div class="line">                   <span class="attribute">inner_scope</span>:</div><div class="line">                     <span class="attribute">variables</span>:</div><div class="line">                       <span class="attribute">foo</span>: <span class="string">"inner scope"</span></div><div class="line">                     <span class="attribute">children</span>:</div><div class="line">                       <span class="attribute">super_inner_scope</span>:</div><div class="line">                         <span class="attribute">variables</span>:</div><div class="line">                           foo : <span class="string">"super inner scope bro!"</span></div></pre></td></tr></table></figure>
+
+<p>As you can see, we have three nodes and there are variables that are available<br>at each node. If you try to access a variable, the interpreter will look up the nodes<br>until it finds an entry that matches.</p>
+<p>Lets go deeper. How about we not even bother with immediatly invoking the function.<br>How would that work?</p>
+<p>The simple answer is that it changes nothing. The scope chain rules are consistent. The only difference<br>is that we now have two ways variables can enter the scope. </p>
+<ol>
+<li>Through the scope tree, variables in parent scopes are available.</li>
+<li>When variables are injected in via the function arguments which can be<br>pulled from some other scope where we invoke the function.</li>
+</ol>
+<p>We delay the instantiation of the scopes until they are invoked later in the program.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//scope A</span></div><div class="line"><span class="keyword">var</span> binder = <span class="function"><span class="keyword">function</span><span class="params">(st)</span> </span>{</div><div class="line">  <span class="comment">//scope B</span></div><div class="line">  <span class="keyword">var</span> state = st</div><div class="line">  <span class="keyword">return</span> {</div><div class="line">    set: <span class="function"><span class="keyword">function</span><span class="params">(newState)</span> </span>{</div><div class="line">      <span class="comment">//scope C</span></div><div class="line">      state = newState;</div><div class="line">      <span class="keyword">return</span> state;</div><div class="line">    },</div><div class="line">    get: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">      <span class="comment">//scope E</span></div><div class="line">      <span class="keyword">return</span> state;</div><div class="line">    }</div><div class="line">  }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>Scope order is created lexically. Each new function definition in the source (ie: text, hence the lexical)<br>is being read into the interpreter as a place to mark a new node in the scope chain on invocation.<br>I mentioned that the scope datastructure resembles a tree because both Scope C and E<br>belong to B as siblings. B in turn, belongs to A.</p>
+<p>None of these functions are being invoked but the scope lookup rules are locked to A -&gt; B, B-&gt; C, B-&gt;E<br>Things get hairier when we invoke them.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//scope A</span></div><div class="line"><span class="keyword">var</span> b1 = binder(<span class="number">5</span>);</div><div class="line">b1.get();   <span class="comment">// =&gt; 5</span></div><div class="line">b1.set(<span class="number">2</span>); <span class="comment">// =&gt; 2</span></div><div class="line">b1.get(); <span class="comment">// =&gt; 2</span></div></pre></td></tr></table></figure>
+
+<p>How on earth is this function maintaining state? The Binder, on invocation, takes the argument 5<br>and creates a scope according to the rules set forward in the source code of binder. </p>
+<p>Now, 2 is in Scope B and being assigned to the variable “state” we instantiated in scope B.<br>We then return the object back. </p>
+<p>The object we get back from calling binder()  has two functions and thus two child<br>scopes of B, (C, and D) which  we return back to Scope A. via the return.</p>
+<p>Now it gets weird. When we call b1.get(), we invoke a function from scope A<br>which internally has a scope C who’s parent scope is scope B. It thus returns a value from scope B<br>back into scope A. Think of it like a closed loop of scopes. ie: a closure. ;)</p>
+<p>This is pretty powerful. b1.set() does something similar only its injecting a variable from scope<br>A containing 2 into scope E where it is assigned to a variable in scope B and subsuquently returned.<br>B1.get(), on its next invocation returns the same value stored in that variable from the same scope<br>into scope A, the top level context.</p>
+<p>We can use this to create objects with completely encapsulated states.<br>This gives us a leg up when trying to wrangle asynchrounous processes.</p>
+<p>Here’s an example of a function that runs a function passed as an argument after a delay.<br>while we wait for the function to fire,<br>we can register functions to be called when the function is resolved.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">//scope A</span></div><div class="line"><span class="keyword">var</span> delay = <span class="function"><span class="keyword">function</span><span class="params">(fn, args, timeout)</span> </span>{</div><div class="line">  <span class="comment">//Scope B</span></div><div class="line">  <span class="keyword">var</span> status = <span class="string">"pending"</span>; <span class="comment">//how we track what the status of the internal state is</span></div><div class="line">  <span class="keyword">var</span> result; <span class="comment">//where we are going to store the result of calling fn.</span></div><div class="line">  <span class="keyword">var</span> deps = []; <span class="comment">//where we store registered callbacks.</span></div><div class="line">  </div><div class="line">  setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="comment">//Scope C</span></div><div class="line">    <span class="comment">/* the scope chain from here is A -&gt; B-&gt; C</span></div><div class="line">    this simply calls teh function and allows us to pass in the</div><div class="line">    arguments as an array</div><div class="line">    */</div><div class="line">    result = fn.apply(<span class="keyword">this</span>, args); <span class="comment">//call the function</span></div><div class="line">    status = <span class="string">"done"</span>;</div><div class="line">    <span class="comment">//we run through all the functions in deps and run them one</span></div><div class="line">    <span class="comment">//by one.</span></div><div class="line">    deps.forEach(<span class="function"><span class="keyword">function</span><span class="params">(dep)</span> </span>{</div><div class="line">      <span class="comment">//Scope D</span></div><div class="line">      dep.call(<span class="keyword">this</span>, result);</div><div class="line">    });</div><div class="line">  }, timeout);</div><div class="line"></div><div class="line">  <span class="comment">//the two objects being returned have access to this scope</span></div><div class="line">  <span class="comment">//which allows us to invoke them to affect this internal </span></div><div class="line">  <span class="comment">//environmental.</span></div><div class="line">  <span class="keyword">return</span> {</div><div class="line">    done: <span class="function"><span class="keyword">function</span><span class="params">(func)</span> </span>{</div><div class="line">      <span class="comment">//Scope E</span></div><div class="line">      <span class="comment">//A -&gt; B -&gt; C</span></div><div class="line">      <span class="keyword">if</span> (status === <span class="string">"pending"</span>) {</div><div class="line">        deps.push(func);</div><div class="line">      }</div><div class="line">      <span class="keyword">if</span> (status === <span class="string">"done"</span>) {</div><div class="line">        func(result);</div><div class="line">      }</div><div class="line">    }</div><div class="line">  }</div><div class="line">}</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">var</span> promise = delay(<span class="function"><span class="keyword">function</span><span class="params">(msg)</span> </span>{</div><div class="line">  <span class="comment">//Scope F</span></div><div class="line">  <span class="keyword">return</span> msg + <span class="string">" world"</span>;</div><div class="line">}, [<span class="string">"hello"</span>], <span class="number">3000</span>);</div><div class="line"></div><div class="line"><span class="comment">//by passing this function to done, you guarantee that</span></div><div class="line"><span class="comment">//when the function passed into delay is called, it will pass</span></div><div class="line"><span class="comment">//the result into the function passed in here.</span></div><div class="line">promise.done(<span class="function"><span class="keyword">function</span><span class="params">(result)</span> </span>{</div><div class="line">  <span class="comment">//Scope G</span></div><div class="line">  <span class="built_in">console</span>.log(result);</div><div class="line">});</div><div class="line"></div><div class="line"><span class="comment">//3000 milliseconds later</span></div><div class="line"><span class="comment">//&gt; "hello world"</span></div></pre></td></tr></table></figure>
+
+<p>Yeah its a wee bit contrived but it illustrates a point. By using a closure to wrap a<br>bunch of data into this enclosed space, we can hide away some<br>pretty sophisticated machinery to invert the responsibilty of control. Now the<br>object maintains the state of the async call to the file and we register functions<br>that it will call when the async call is resolved. This removes alot of overhead for managing<br>async functions.</p>
+<p>In Node.js, we pass a callback into the third paramater  for the standard library functions. </p>
+<p>What if we could apply the same principle and get an object we could pass along functions to<br>and know it will take care of running them when the file is available?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> fileObject = <span class="function"><span class="keyword">function</span><span class="params">(fileName, encoding)</span> </span>{</div><div class="line">  <span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</div><div class="line">  <span class="keyword">var</span> status = <span class="string">"pending"</span>;</div><div class="line">  <span class="keyword">var</span> result_data;</div><div class="line">  <span class="keyword">var</span> result_error;</div><div class="line">  <span class="keyword">var</span> deps_success = [];</div><div class="line">  <span class="keyword">var</span> deps_fail = [];</div><div class="line">  <span class="keyword">var</span> deps_always = [];</div><div class="line">  <span class="keyword">var</span> ret = {};</div><div class="line">  encod = encoding || <span class="string">'utf8'</span>;</div><div class="line"></div><div class="line">  fs.readFile(fileName, encoding ,<span class="function"><span class="keyword">function</span><span class="params">(err, data)</span> </span>{</div><div class="line">    result_data = data;</div><div class="line">    result_error = err;</div><div class="line">    <span class="keyword">if</span> (!result_error) {</div><div class="line">      deps_success.forEach(<span class="function"><span class="keyword">function</span><span class="params">(fn)</span> </span>{</div><div class="line">        fn(result_data);</div><div class="line">      });</div><div class="line">      status = <span class="string">"success"</span>;</div><div class="line">    } <span class="keyword">else</span> {</div><div class="line">      deps_fail.forEach(<span class="function"><span class="keyword">function</span><span class="params">(fn)</span> </span>{</div><div class="line">        fn(result_error);</div><div class="line">      });</div><div class="line">      status = <span class="string">"error"</span>;</div><div class="line">    }</div><div class="line">    deps_always.forEach(<span class="function"><span class="keyword">function</span><span class="params">(fn)</span> </span>{</div><div class="line">      fn();</div><div class="line">    });</div><div class="line">  });</div><div class="line">  <span class="keyword">var</span> queueFunction = <span class="function"><span class="keyword">function</span><span class="params">(list, fn)</span> </span>{</div><div class="line">    list.push(fn);</div><div class="line">  };</div><div class="line">  <span class="keyword">var</span> done = <span class="function"><span class="keyword">function</span><span class="params">(fn)</span> </span>{</div><div class="line">    <span class="keyword">if</span> (status === <span class="string">"done"</span>) {</div><div class="line">      fn(result_data);</div><div class="line">      <span class="keyword">return</span> ret;</div><div class="line">    }</div><div class="line">    <span class="keyword">if</span> (status === <span class="string">'pending'</span>) {</div><div class="line">      queueFunction(deps_success, fn);</div><div class="line">      <span class="keyword">return</span> ret;</div><div class="line">    }</div><div class="line">  };</div><div class="line">  <span class="keyword">var</span> fail = <span class="function"><span class="keyword">function</span><span class="params">(fn)</span> </span>{</div><div class="line">    <span class="keyword">if</span> (status === <span class="string">"error"</span>) {</div><div class="line">      fn(result_error);</div><div class="line">    }</div><div class="line">    <span class="keyword">if</span> (status === <span class="string">"pending"</span>) {</div><div class="line">      queueFunction(deps_fail, fn);</div><div class="line">    }</div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">  };</div><div class="line">  <span class="keyword">var</span> always = <span class="function"><span class="keyword">function</span><span class="params">(fn)</span> </span>{</div><div class="line">    <span class="keyword">if</span> (status === <span class="string">"pending"</span>) {</div><div class="line">      queueFunction(deps_always, fn);</div><div class="line">    } <span class="keyword">else</span> {</div><div class="line">      fn();</div><div class="line">    }</div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">  };</div><div class="line">  ret.done = done;</div><div class="line">  ret.fail = fail;</div><div class="line">  ret.always = always;</div><div class="line"></div><div class="line"></div><div class="line">  <span class="comment">//this exposes the status as a readonly property</span></div><div class="line">  <span class="built_in">Object</span>.defineProperty(ret, <span class="string">'status'</span>, {</div><div class="line">    get: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">      <span class="keyword">return</span> status;</div><div class="line">    },</div><div class="line">    enumerable: <span class="literal">true</span></div><div class="line">  });</div><div class="line"></div><div class="line">  <span class="keyword">return</span> ret;</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>Hey, that wasn’t so bad. We return an object of three functions and<br>it will take care of running the appropriate functions based on the<br>status of the object’s internal async operation when its resolved.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> newFile = fileObject(<span class="string">'./hello.txt'</span>);</div><div class="line"></div><div class="line">newFile.done(<span class="function"><span class="keyword">function</span><span class="params">(data)</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'two '</span> + data);</div><div class="line">});</div><div class="line"></div><div class="line">newFile.done(<span class="function"><span class="keyword">function</span><span class="params">(data)</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'one '</span> + data);</div><div class="line">});</div><div class="line"></div><div class="line">newFile.fail(<span class="function"><span class="keyword">function</span><span class="params">(err)</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'the file errored out. returned: '</span> + err);</div><div class="line">});</div><div class="line"></div><div class="line">newFile.always(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'this always gets called'</span>);</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>In short, lexical scoping and closures are pretty damn awesome.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/07/16/lexically-scope-like-a-boss/" data-id="k2qqu11k1ce4duib" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-thorax-is-awesome" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2013/07/05/thorax-is-awesome/" class="article-date">
+  <time datetime="2013-07-05T20:45:00.000Z" itemprop="datePublished">Jul 5 2013</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/backbone-thorax-defineProperty/">backbone thorax defineProperty</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2013/07/05/thorax-is-awesome/">Thorax is Awesome</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>I like Backbone.js a lot. It’s a fantastic utlity library for building your own<br>best of breed javascript applications. It is much more configurable than Angular<br>or Ember - both of which make numerous assumptions about the nature of your app,<br>which may or may not lead to frustration when working with a legacy codebase. While<br>you certainly won’t be cranking out apps as quickly as you would in more magical frameworks,<br>Backbone gives you enough to get started. It stays slim in features to avoid stepping<br>on your toes. Backbone is the fixed gear bike of frontend javascript frameworks.</p>
+<p>I recommend anyone new to Backbone build a few projects to learn it. In practice,<br>I don’t recommend using Backbone alone for building out a full mvc system. Its missing<br>a few really important features that you would have to implement yourself.</p>
+<h2 id="Enter_Thorax">Enter Thorax</h2>
+<p>In the world of Backbone extensions, there are three major players, Marionette, Thorax, and<br>Chaplain. I haven’t looked at Chaplain and I found Marionette heavy for my needs.<br>Thorax on the other hand, was a breath of fresh air. I especially loved the<br><a href="http://handlebarsjs.com" target="_blank" rel="external">handlebars.js</a> templates integration.</p>
+<p>In the following posts, I will outline some of the major benefits of using Thorax.</p>
+<ul>
+<li>Out of the box render() that works</li>
+<li>Child view management</li>
+<li>Layout Views</li>
+<li>The MVC in Backbone’s MVC</li>
+</ul>
+<h4 id="Out_of_the_box_render()_that_works">Out of the box render() that works</h4>
+<p>Backbone.View’s default render method is a noop(), (ie: function() {}).<br>Backbone’s author’s intend for you to write your own render function which<br>sets its instance’s <em>el</em> property to your view’s generated representation of<br>the model’s data. Backbone avoids adding in this feature to keep it agnostic to<br>your templating system.</p>
+<blockquote>
+<p>Note: Handlebars</p>
+<p>Handlebars is an html templating language for javascript.</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">&lt;h1&gt;{{ value }}&lt;/h1&gt;</div><div class="line">&lt;p&gt;</div><div class="line">  {{#if foo}}{{foobar}}{{/if}}>.</div><div class="line">&lt;/p&gt;</div></pre></td></tr></table></figure>
+
+<h3 id="Handlebars">Handlebars</h3>
+<p>This handlebars code is fed into Handlebars.compile() which returns a template function.<br>This function is then passed a “context” object. example: </p>
+ <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line">{ </div><div class="line">  value: <span class="string">"hello there"</span> </div><div class="line">  foo: <span class="literal">true</span>,</div><div class="line">  foobar: <span class="string">"hello Douglas"</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>and generates a string of html that you can inject into the dom.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="tag">&lt;<span class="title">h1</span>&gt;</span>hello there<span class="tag">&lt;/<span class="title">h1</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">p</span>&gt;</span>hello Douglas<span class="tag">&lt;/<span class="title">p</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>Since Thorax makes the decision of using Handlebars, it can give us a default render()<br>method that’s usable rather than a noop(). Thorax.View.render() constucts a<br>context object containing all of the <em>properties</em> of the view instance and the attributes<br>of the model which is passed into the Handlebars template function so that it’s available<br>in the rendered view.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">//render function, this is what a Thorax render does, </span></div><div class="line"><span class="comment">// *this* resolves to the thorax instance</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> render = <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="comment">//get the attributes of the property</span></div><div class="line">  <span class="keyword">var</span> viewProperties = {};</div><div class="line">  <span class="keyword">for</span> ( <span class="keyword">var</span> property <span class="keyword">in</span> <span class="keyword">this</span>) {</div><div class="line">    viewProperties[property] = <span class="keyword">this</span>[property];</div><div class="line">  };</div><div class="line">  <span class="comment">//underscore.js's extend</span></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.model) {</div><div class="line">    viewProperties = _.extend(viewProperties, <span class="keyword">this</span>.model.attributes);</div><div class="line">  };</div><div class="line">  <span class="keyword">this</span>.$el.html(<span class="keyword">this</span>.template(viewProperties));</div><div class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>By default, properties of the view insance get passed to the template<br>but not the functions. What if we want to overide this?</p>
+<p>In the past, I would write view helpers in order to render attributes that required computation.<br>There’s a more elegant way using the<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty" target="_blank" rel="external">defineProperty</a> function.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">var peter = new Thorax.Model({</div><div class="line">  firstName: 'Peter',</div><div class="line">  lastName:  'de Croos',</div><div class="line">  githubHandle: 'Cultofmetatron'</div><div class="line">});</div><div class="line"></div><div class="line">var PersonView = Thorax.View.extend({</div><div class="line">  template:</div><div class="line">    Handlebars.compile("we can call</div><div class="line">             {{firstName}}, 
+               {{lastName}} and 
+               {{fullName}}"),</div><div class="line">    initialize: function() {</div><div class="line">      Object.defineProperty(this, 'fullName', {</div><div class="line">        get: function() {</div><div class="line">          return this.model.get('firstName') + ' ' +</div><div class="line">          this.model.get('lastName');</div><div class="line">        },</div><div class="line">        enumerable: true // see note below</div><div class="line">      });</div><div class="line">    }</div><div class="line">  });</div><div class="line"></div><div class="line">  var peterView = new PersonView({</div><div class="line">    model: peter</div><div class="line">  });</div></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><em>Technical note:</em> By default, properties defined by <em>defineProperty</em> are not enumerable. </p>
+<p>IE: They won’t show up when you do the <em>for (property in this) {}</em>. Because<br>thats how thorax’s render view gets at the attributes, it won’t show up in the template<br>either. Luckily that is easy enough to fix by specifying the option<br><em>enumerable:true</em></p>
+</blockquote>
+<h4 id="Child_view_management">Child view management</h4>
+<p>Backbone does nothing to address embedded views. It expects you to write your own logic<br>for handling child views in the render function. As you can imagine, it is kind of a pain.<br>It sounds simple enough in theory, but in practice it means that you have to write code to check<br>if a parent view is being removed and recursivly have it descend into all it child views to<br>undelegate events from the dom. This is a major potential source of javascript memory leaks.<br>Thorax provides some great helper functions for this. It just wins.</p>
+<p>Thorax.Views can be embedded in another view simply by adding the subview as a property.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> blogModel = Thorax.Model({</div><div class="line">  name: <span class="string">'console.log(this.thought)'</span>,</div><div class="line">  post: <span class="keyword">new</span> Thorax.Model({</div><div class="line">    title: <span class="string">"Thorax is awesome"</span>,</div><div class="line">    content: <span class="string">"maximum callstack exeeded"</span></div><div class="line">  })</div><div class="line">});</div><div class="line"></div><div class="line"><span class="keyword">var</span> PostView = Thorax.View.extend({</div><div class="line">  template: Handlebars.compile(<span class="string">'<h2>{{title}}</h2><p>{{content}}</p>'</span>)</div><div class="line">  });</div><div class="line"></div><div class="line">  <span class="keyword">var</span> blogView = <span class="keyword">new</span> BlogView({</div><div class="line">    template: Handlebars.compile(<span class="string">"<h1>{{name}}</h1>{{view postView}}"</span>),</div><div class="line">    model: blogModel,</div><div class="line">    postView: <span class="keyword">new</span> PostView({</div><div class="line">      model: <span class="keyword">this</span>.model.get(<span class="string">'post'</span>)</div><div class="line">    })</div><div class="line">  });</div></pre></td></tr></table></figure>
+
+<p>As you can see, it was as easy as embedding  {{view postView }}<br>inside the template and Thorax takes of care of yielding control of that region to the<br>child view.</p>
+<h4 id="Layout_Views">Layout Views</h4>
+<p>Let me just say that layout views are really awesome. A layout view is<br>a view with the sole purpose being a container which can hold whatever<br>view/model combo fits the current context.</p>
+<h5 id="The_MVC_in_Backbone’s_MVC">The MVC in Backbone’s MVC</h5>
+<p>There’s a Backbone.Model and a Backbone.View but where is Backbone.Controller? (hint: there isn’t one)</p>
+<p>Currently Marrionette augments Backbone with a Controller object but<br>Thorax does nothing of the sort. I guess the real question is, where does a controller fit?</p>
+<p>Philosphically, MVC stands for a seperation of concerns between</p>
+<ol>
+<li>Models: the data containing the application logic we are modelling on the computer</li>
+<li>Views: Objects that manage the presentation of the models. This includes binding<br>event handlers and rerendering when the underlying model(s) change.</li>
+<li>Controllers: Objects that take care of managing what view and model are relevant.</li>
+</ol>
+<p>In the Rails world, the architectural philosphy revolves around the concept<br>of skinny controller/fat Model. The brunt of the code for manipulating the models should<br>be inside the instance methods in the models themeselves and the controller interacts with it<br>through an api. </p>
+<p>When we really get down to it, controllers perform a few functions.</p>
+<ol>
+<li>Watch out for some event that should trigger a change in view and/or model.</li>
+<li>Manage the creation of new view instances to represent new or altered models.</li>
+<li>Render html and insert it into the DOM.</li>
+</ol>
+<p>Our controller will handle only the details of getting the proper model and binding<br>it to a view so that it can be rendered.</p>
+<p>Lets create a function PostController that does nothing more than lookup a<br>model by its id and creates a post view.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> postController = <span class="function"><span class="keyword">function</span><span class="params">(postId)</span> </span>{</div><div class="line">  <span class="comment">//for info on Thorax.Views, Thorax.Models and Thorax.Collections,</span></div><div class="line">  <span class="comment">//see the note below</span></div><div class="line">  <span class="keyword">var</span> postView = <span class="keyword">new</span> Thorax.Views.FullPagePostView({</div><div class="line">    model: Thorax.Collections.posts.get(postId)</div><div class="line">  });</div><div class="line">  <span class="keyword">return</span> postView;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<blockquote>
+<p> <strong>Note</strong> About Thorax Registries</p>
+<p> Thorax provides a Registry: a series of hashes<br> where you can store the Constructor Functions for your<br> extended models and views.</p>
+<p> For more information visit <a href="http://thoraxjs.org/api.html#registry" target="_blank" rel="external">The throax docs</a></p>
+</blockquote>
+<p>Now we have a basic controller that handles cases 2 and 3 of our list. We still need to take care<br>of figuring out how we want to determine when this controller gets called. In the projects<br>I have worked on, I’ve solved this problem using the router.</p>
+<p>Thorax does nothing special with the router so we will use Backbone.Router as is. It will manage one<br>Layout view, a special Thorax view made for holding other views.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//router.js</span></div><div class="line"><span class="keyword">var</span> layoutContainer;</div><div class="line"><span class="keyword">var</span> callController = <span class="function"><span class="keyword">function</span><span class="params">(controller)</span> </span>{</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="comment">//arguments is used to shift responsibilty of knowing the </span></div><div class="line">    <span class="comment">//amount of paramaters to the controller</span></div><div class="line">    <span class="keyword">var</span> view = controller.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</div><div class="line">    layoutContainer.setView(view);</div><div class="line">  };</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>The function <em>callController</em> takes a controller, passes along<br>the arguments given to it by the router and takes care of the<br>boiler plate of creating a view and setting it into the container.<br><em>layoutContainer.setView()</em> takes care of undelegating events of<br>all elements attached to the previous view (if there was a previous view)<br>as it swaps in the html of the new view.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//continued from above</span></div><div class="line"><span class="keyword">var</span> Router = Backbone.Router.extend({</div><div class="line">  initialize: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    layoutContainer = <span class="keyword">new</span> Thorax.LayoutView({</div><div class="line">      template: <span class="string">'#AppLayout'</span></div><div class="line">    });</div><div class="line">    <span class="comment">/*</span></div><div class="line">      this is the point in the html where our container will be </div><div class="line">      injected in. from here on out, the router and controller</div><div class="line">      system will take care of swappng out application views </div><div class="line">      within this container.</div><div class="line">    */</div><div class="line">    layoutContainer.appendTo(<span class="string">'#entry-point'</span>);</div><div class="line">    $(<span class="built_in">document</span>).trigger(<span class="string">'popstate'</span>);</div><div class="line">  },</div><div class="line">  routes: {</div><div class="line">    <span class="string">'posts/:postId'</span>: <span class="string">'postRoute'</span></div><div class="line">  },</div><div class="line">  postRoute: callController(postController)</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>This is a pretty straight forward setup with one possible new thing. So you<br>probably noticed the <em>$(document).trigger(‘popstate’)</em>. In standard backbone,<br>the application instance Router has a method <em>navigate()</em> usually called by</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">router.navigate(<span class="string">'path/to/route'</span>, { trigger: <span class="literal">true</span> });</div></pre></td></tr></table></figure>
+
+<p>The trigger true is needed by backbone for the router to trigger any associated actions.<br>The browser by default writes to history when the document recieves the<br><a href="https://developer.mozilla.org/en-US/docs/Web/Reference/Events/popstate" target="_blank" rel="external">popstate</a> event.<br>The browser triggers popstate automatically when you enter a page or hit the backwards or forward buttons.<br>When you click back, the new url will load and the router which is listening<br>for the popstate event on ‘document’ will perform the behavior associated with that url.</p>
+<p>By having the <em>$(document).trigger(‘popstate’)</em> at the end of the initialization, we guarantee<br>that once the router is finished initializing, it will read in the url and trigger the appropriate<br>context for the app for the url. This is great if we want multiple url entry points through<br>which the user enters the app. The user gets the same javascript no matter what url of the<br>website they visit. The app takes care of loading the right content based on the url.</p>
+<p>Finally, the template option that was passed into the instantiation of layoutView is optional.<br>By default, Thorax wraps the layout in a div tag. We can customize the layoutView by giving it a template<br>and using the layout-element helper in that template.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">id</span>=<span class="value">"appLayout"</span> <span class="attribute">type</span>=<span class="value">"handlebars/template"</span>&gt;</span><span class="javascript"></span></div><div class="line">  ￿<span class="number">1</span>￿<span class="tag">&lt;/<span class="title">script</span>&gt;</span></div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2013/07/05/thorax-is-awesome/" data-id="63vg5xrdp111fbic" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+  
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Javascript-prototypes/">Javascript, prototypes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/algorithms-sorting-python/">algorithms sorting python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-javascript/">backbone javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-thorax-defineProperty/">backbone thorax defineProperty</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/functional-programming-ecmascript6-javascript-generators/">functional-programming ecmascript6 javascript generators</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/generators-promises/">generators promises</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-algorithms-sorting/">javascript algorithms sorting</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-backbone-js-models-mvc/">javascript backbone.js models mvc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-scoping/">javascript scoping</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/koa-generators-javascript-harmony-ecmascript6/">koa generators javascript harmony ecmascript6</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-javascript-systems-process/">node javascript systems process</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-process-fork/">node process fork</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/09/">September 2012</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2014/02/08/functional-programming-with-ecmascript6-generators/">Functional programming with ecmascript6 generators</a>
+          </li>
+        
+          <li>
+            <a href="/2014/02/01/koa-zero-to-todo-list/">koa: zero to todo list</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/22/javascript-generators-first-impressions/">javascript generators: first impressions</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/06/lets-build-a-backbone-based-framework/">lets build a backbone based framework!!</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/16/lexically-scope-like-a-boss/">How to lexically scope like a boss</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>

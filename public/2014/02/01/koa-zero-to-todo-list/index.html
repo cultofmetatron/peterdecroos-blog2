@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>koa: zero to todo list | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Note: you need to run node 0.11 with —harmony to run the code.
+From the creators of express comes a brand new framework for node powered bythe new ecmascript 6 generators syntax. Koa is an interesting">
+<meta property="og:type" content="article">
+<meta property="og:title" content="koa: zero to todo list">
+<meta property="og:url" content="http://yoursite.com/2014/02/01/koa-zero-to-todo-list/">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Note: you need to run node 0.11 with —harmony to run the code.
+From the creators of express comes a brand new framework for node powered bythe new ecmascript 6 generators syntax. Koa is an interesting">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="koa: zero to todo list">
+<meta name="twitter:description" content="Note: you need to run node 0.11 with —harmony to run the code.
+From the creators of express comes a brand new framework for node powered bythe new ecmascript 6 generators syntax. Koa is an interesting">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-koa-zero-to-todo-list" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/02/01/koa-zero-to-todo-list/" class="article-date">
+  <time datetime="2014-02-02T01:12:00.000Z" itemprop="datePublished">Feb 1 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/koa-generators-javascript-harmony-ecmascript6/">koa generators javascript harmony ecmascript6</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      koa: zero to todo list
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Note:_you_need_to_run_node_0-11_with_—harmony_to_run_the_code-">Note: you need to run node 0.11 with —harmony to run the code.</h2>
+<p>From the creators of express comes a brand new framework for node powered by<br>the new ecmascript 6 generators syntax. <a href="http://koajs.com/" target="_blank" rel="external">Koa</a> is an interesting<br>reimagining of how we will be able to build web applications in javascript.</p>
+<h3 id="The_old_paradigm">The old paradigm</h3>
+<p>In the standard node library, The ‘http’ module is used to create servers.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span><span class="params">(req, res)</span> </span>{</div><div class="line">  res.writeHead(<span class="number">200</span>, {<span class="string">'Content-Type'</span>: <span class="string">'text/plain'</span>});</div><div class="line">  <span class="comment">//server logic goes here</span></div><div class="line">  res.end(<span class="string">''</span>);</div><div class="line">});</div><div class="line"></div><div class="line">server.listen(<span class="number">3000</span>, <span class="string">'127.0.0.1'</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'listening on port 3000'</span>);</div></pre></td></tr></table></figure>
+
+<p>Express exposes a function that we can give to<br>http.createServer as a callback. Express middleware is a set of functions that<br>take 3 arguments, req, res and next. The middleware performs some operations, modifies<br>either the request or response objects and passed down to the next middleware in the stack<br>by calling next(). Its akin to a water flow model where the the response ends somewhere<br>near the end of the middleware stack.</p>
+<h3 id="Enter_Koa,_The_generators_based_framework">Enter Koa, The generators based framework</h3>
+<p>Like express, Koa works internally by generating a callback that can be passed to<br>http.createServer().  Unlike Express, it uses generators to provide a much more fine grained<br>model of control flow.</p>
+<p>A very basic koa app looks like this, lets make it serve up the contents of a file</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> koa          = <span class="built_in">require</span>(<span class="string">'koa'</span>);</div><div class="line"><span class="keyword">var</span> Promise      = <span class="built_in">require</span>(<span class="string">'bluebird'</span>);</div><div class="line"></div><div class="line"><span class="comment">//creates promise yielding versions of fs</span></div><div class="line"><span class="keyword">var</span> fs = Promise.promisifyAll(<span class="built_in">require</span>(<span class="string">'fs'</span>));</div><div class="line"><span class="comment">//create the koa instance</span></div><div class="line"><span class="keyword">var</span> app = koa();</div><div class="line"></div><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">(next)</span> </span>{</div><div class="line">  <span class="comment">//here's an example middleware that logs to the console</span></div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'timestamp: before request =&gt; '</span>, time.now());</div><div class="line">  <span class="keyword">yield</span> next</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'timestamp: after request  =&gt; '</span>, time.now());</div><div class="line">});</div><div class="line"></div><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">this</span>.body = <span class="keyword">yield</span> fs.readFileAsync(<span class="string">'./app.js'</span>, <span class="string">'utf8'</span>);</div><div class="line">});</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'now listening on port 3000'</span>);</div></pre></td></tr></table></figure>
+
+<p>Unlike Express, the middleware is written using generators.<br>Downstream middleware in Koa flows upstream on return. Middleware<br>yields down stream by explicitly calling ‘yield next.’. Upon return, the control<br>flow yields back up to where the upstream middleware yielded downstream.</p>
+<p>Where Express passes native node req and res objects through to each function, Koa<br>manages a context where it encapsulates them behind an interface. They are still available<br>through the ‘this’ keyword as this.req and this.res. However, Its not reccomended in<br>the docs that you work with these native objects. One could imagine calling this.res.end(‘’)<br>would throw a monkey wrench in the control flow. Instead you are supposed to work through<br>the this.response and this.request. Most of the methods are aliased directly to this. ‘this.body’<br>for example, is aliased to this.response.body. </p>
+<p>There does not yet appear to be a direct way to get<br>to the request body. The co-body parser accesses the req.body directly so while the docs say<br>don’t do it, Koa is still young so you may have to get your hands dirty.</p>
+<h3 id="A_Todo_app_in_koa">A Todo app in koa</h3>
+<p>Now that we’ve covered the basics, lets try something a little more complex. A todo<br>List seems like a good thing no one has ever tried to make before in any technology ever!<br>To simplify assumptions, lets just store the todos in memory.</p>
+<p>By itself, Koa is very minimalistic. It does not provide body parsing, sessions, or<br>routing in the core. Unfortunately Koa is still young so there just aren’t that many<br>npm modules for it just yet. A quick search on <a href="https://github.com/koajs/koa/wiki" target="_blank" rel="external">the Koa website</a><br>shows that we do have the necessary modules for a basic todo.</p>
+<ol>
+<li><a href="https://github.com/koajs/route" target="_blank" rel="external">koa-route</a>: for routing</li>
+<li><a href="https://github.com/visionmedia/co-body" target="_blank" rel="external">co-body</a>: for parsing the body of post requests</li>
+<li><a href="https://github.com/koajs/static" target="_blank" rel="external">koa-static</a>: for serving up static assets</li>
+</ol>
+<p>Here’s the basic server side api</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//jshint esnext</span></div><div class="line"><span class="keyword">var</span> koa          = <span class="built_in">require</span>(<span class="string">'koa'</span>);</div><div class="line"><span class="keyword">var</span> staticServer = <span class="built_in">require</span>(<span class="string">'koa-static'</span>);</div><div class="line"></div><div class="line"><span class="comment">//this allows us to parse the native req object to get the body</span></div><div class="line"><span class="keyword">var</span> parse        = <span class="built_in">require</span>(<span class="string">'co-body'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> router       = <span class="built_in">require</span>(<span class="string">'koa-route'</span>);</div><div class="line"><span class="keyword">var</span> _            = <span class="built_in">require</span>(<span class="string">'underscore'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> Promise      = <span class="built_in">require</span>(<span class="string">'bluebird'</span>);</div><div class="line"><span class="keyword">var</span> path         = <span class="built_in">require</span>(<span class="string">'path'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> fs = Promise.promisifyAll(<span class="built_in">require</span>(<span class="string">'fs'</span>));</div><div class="line"><span class="keyword">var</span> app = koa();</div><div class="line"><span class="comment">//our very basic data store</span></div><div class="line"><span class="keyword">var</span> todos = [];</div><div class="line"></div><div class="line"><span class="comment">//gets us unique ids</span></div><div class="line"><span class="keyword">var</span> counter = (<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> count = <span class="number">0</span>;</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    count++;</div><div class="line">    <span class="keyword">return</span> count;</div><div class="line">  };</div><div class="line">})();</div><div class="line"></div><div class="line"><span class="comment">//serve up the public directory where we have all the assets</span></div><div class="line">app.use(staticServer(path.join(__dirname, <span class="string">'public'</span>)));</div><div class="line"></div><div class="line">app.use(router.post(<span class="string">'/todos'</span>, <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="comment">/*</span></div><div class="line">    yield lets us pass asynchronous functions that return promises or thunks</div><div class="line">    It will freeze the middleware till its resolved and pass it back in.</div><div class="line">  */</div><div class="line">  <span class="keyword">var</span> todo = (<span class="keyword">yield</span> parse.json(<span class="keyword">this</span>));</div><div class="line"></div><div class="line">  todo.id = counter();</div><div class="line">  todos.push(todo);</div><div class="line">  <span class="keyword">this</span>.body = <span class="built_in">JSON</span>.stringify(todos);</div><div class="line">}));</div><div class="line"></div><div class="line"></div><div class="line">app.use(router.get(<span class="string">'/todos'</span>, <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">this</span>.body = <span class="built_in">JSON</span>.stringify(todos);</div><div class="line">}));</div><div class="line"></div><div class="line">app.use(router.delete(<span class="string">'/todos/:id'</span>, <span class="function"><span class="keyword">function</span> *<span class="params">(id)</span> </span>{</div><div class="line">  todos = _(todos).reject(<span class="function"><span class="keyword">function</span><span class="params">(todo)</span> </span>{</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'what? '</span>, todo, id );</div><div class="line">    <span class="keyword">return</span> todo.id === <span class="built_in">parseInt</span>(id, <span class="number">10</span>);</div><div class="line">  }, <span class="keyword">this</span>);</div><div class="line">  <span class="keyword">this</span>.body = <span class="built_in">JSON</span>.stringify(todos.sort(<span class="function"><span class="keyword">function</span><span class="params">(a, b)</span> </span>{ <span class="keyword">return</span> a - b;}));</div><div class="line">}));</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'listening on port 3000'</span>);</div></pre></td></tr></table></figure>
+
+<p><a href="https://github.com/cultofmetatron/koa-todo" target="_blank" rel="external">Download the code on github</a><br>The github version includes frontend code.</p>
+<h4 id="A_few_things_of_note:">A few things of note:</h4>
+<p>The ‘yield’ keyword ca do some interesting things. If we pass into it<br>an asynchronous function that returns a thunk or promise, it will stop execution of<br>the middleware and wait till it resolves. It then returns the value of the promise or thunk<br>and resumes the generator. This is a hell of a lot easier to read.</p>
+<h4 id="A_word_of_caution">A word of caution</h4>
+<p>The ‘yield’ keyword lets us do some safe blocking but it isn’t always the ideal solution.<br>While the event loop itself isn’t blocked by it the way futures can, it does block resuming<br>of any operations that occur after it. </p>
+<p>For example, if we run three asynchronous operations top to bottom that do not depend on<br>each other, like the following…</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> a = <span class="keyword">yield</span> async1();</div><div class="line">  <span class="keyword">var</span> b = <span class="keyword">yield</span> async2();</div><div class="line">  <span class="keyword">var</span> c = <span class="keyword">yield</span> async3();</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>This completely defeats the purpose of node’s (almost automatic) concurrency. When we call<br>async1, we are blocking until async2 runs. This is unoptimal. It would be better to get the promises<br>for the three functions and yield on a merged promise.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> a = async1();</div><div class="line">  <span class="keyword">var</span> b = async2();</div><div class="line">  <span class="keyword">var</span> c = async3();</div><div class="line">  <span class="keyword">var</span> result = <span class="keyword">yield</span> Promise.all([a, b, c]);</div><div class="line">});</div></pre></td></tr></table></figure>
+
+
+<p>I’m excited to cut my teeth on some bigger problems. As the framework matures, Its going to<br>allow more fine grained control for how we write the next generation of web applications.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/02/01/koa-zero-to-todo-list/" data-id="al5df05kk2bigjk5" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/02/08/functional-programming-with-ecmascript6-generators/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Functional programming with ecmascript6 generators
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/01/22/javascript-generators-first-impressions/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">javascript generators: first impressions</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Javascript-prototypes/">Javascript, prototypes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/algorithms-sorting-python/">algorithms sorting python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-javascript/">backbone javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-thorax-defineProperty/">backbone thorax defineProperty</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/functional-programming-ecmascript6-javascript-generators/">functional-programming ecmascript6 javascript generators</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/generators-promises/">generators promises</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-algorithms-sorting/">javascript algorithms sorting</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-backbone-js-models-mvc/">javascript backbone.js models mvc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-scoping/">javascript scoping</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/koa-generators-javascript-harmony-ecmascript6/">koa generators javascript harmony ecmascript6</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-javascript-systems-process/">node javascript systems process</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-process-fork/">node process fork</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/09/">September 2012</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2014/02/08/functional-programming-with-ecmascript6-generators/">Functional programming with ecmascript6 generators</a>
+          </li>
+        
+          <li>
+            <a href="/2014/02/01/koa-zero-to-todo-list/">koa: zero to todo list</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/22/javascript-generators-first-impressions/">javascript generators: first impressions</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/06/lets-build-a-backbone-based-framework/">lets build a backbone based framework!!</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/16/lexically-scope-like-a-boss/">How to lexically scope like a boss</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>

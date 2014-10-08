@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Category: backbone javascript | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/categories/backbone-javascript/">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+<meta name="twitter:description">
+
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-lets-build-a-backbone-based-framework" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/01/06/lets-build-a-backbone-based-framework/" class="article-date">
+  <time datetime="2014-01-06T21:57:00.000Z" itemprop="datePublished">Jan 6 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/backbone-javascript/">backbone javascript</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/01/06/lets-build-a-backbone-based-framework/">lets build a backbone based framework!!</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>I’ve been building large scale applications in Backbone for about 8 months now.<br>In that time I’ve used throax as well as building custom solutions in backbone. </p>
+<p>Last night, I live coded the creation of a demo backbone framework similar in features<br>to Thorax. I’m going to walk you through how<br>I’ve solved architectural problems in contructing a large scale backbone framework.</p>
+<p><a href="https://github.com/cultofmetatron/backbone-framework-example" target="_blank" rel="external">Fork or watch it here</a></p>
+<p>When building a large scale Backbone, there are several consderations to consider.</p>
+<ul>
+<li>How are we going to have templates load? Inline html declarations in the views do not scale</li>
+<li>how do we handle render?</li>
+<li>how do we handle child views?</li>
+</ul>
+<p>By default, backboneView.render() is a noop. Its meant to be overidden. Backbone.Events gives us<br>a nice set of methods to allow Backbone objects to listenTo() events off each other, However, the<br>actual bindings and callbacks are left to the implimenter.</p>
+<h3 id="Loading_Templates">Loading Templates</h3>
+<p>the first thing is figure out how we want the templates to load. If using a tool like require.js<br>or browserify, there are plugins for automatically compiling templates and sending to the client<br>just a compiled template function we can plug into out view. Since I’m trying to keep it simple,<br>the easiest way to get templates is to wrap your templates in a script tag. To prevent the browser<br>from executing it as javascript, we add a type that is not ‘text/javascript’.</p>
+<p>I like to use “text/template.”</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/template"</span> <span class="attribute">data-name</span>=<span class="value">"templateName"</span>&gt;</span><span class="javascript"></span></div><div class="line">  &lt;!-- template contents goes here --&gt;</div><div class="line"><span class="tag">&lt;/<span class="title">script</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>Transforming these into working templates is fairly straightforward. For each<br>script tag with type=”text/template”, run the template compiler over the html inside and<br>store it somewhere. In this case I add a data-name attribute which will be the key for the<br>hash I store the compiled template in.</p>
+<p><a href="https://github.com/cultofmetatron/backbone-framework-example/blob/master/public/javascripts/init.js" target="_blank" rel="external">/public/javascripts/init.js</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.templates = {};</div><div class="line"><span class="keyword">var</span> $sources = $(<span class="string">'script[type="text/template"]'</span>);</div><div class="line">$sources.each(<span class="function"><span class="keyword">function</span><span class="params">(index, el)</span> </span>{</div><div class="line">  <span class="keyword">var</span> $el = $(el);</div><div class="line">  templates[$el.data(<span class="string">'name'</span>)] = _.template($el.html());</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>In this version, I chose to use express + jade, Of course writing underscore templates<br>in jade seemed a little odd so I delegated those to jade’s include statement. I know there<br>are projects like jade-browserify so maybe I’ll eventually update this using just jade.</p>
+<p><a href="https://github.com/cultofmetatron/backbone-framework-example/blob/master/views/layout.jade" target="_blank" rel="external">/views/layout.jade</a></p>
+<figure class="highlight jade"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">doctype html</div><div class="line">html</div><div class="line">  head</div><div class="line">    <span class="variable">title=</span> title</div><div class="line">    link( <span class="variable">rel=</span><span class="string">"stylesheet"</span>, <span class="variable">href=</span>'/components/bootstrap/dist/css/bootstrap.css')</div><div class="line">    link( <span class="variable">rel=</span><span class="string">"stylesheet"</span>, <span class="variable">href=</span>'/stylesheets/style.css')</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/components/jquery/jquery.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/components/bootstrap/dist/js/bootstrap.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/components/underscore/underscore.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/components/backbone/backbone.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/javascripts/base.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/javascripts/application.js"</span>)</div><div class="line">  body</div><div class="line">    block content</div><div class="line">    script(<span class="variable">type=</span><span class="string">"text/template"</span>, <span class="variable">data-name=</span><span class="string">"main"</span>)</div><div class="line">      include templates/main.html</div><div class="line">    script(<span class="variable">type=</span><span class="string">"text/template"</span>, <span class="variable">data-name=</span><span class="string">"header"</span>)</div><div class="line">      include templates/header.html</div><div class="line">    script(<span class="variable">type=</span><span class="string">"text/template"</span>, <span class="variable">data-name=</span><span class="string">"menuLinks"</span>)</div><div class="line">      include templates/menulink.html</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/javascripts/init.js"</span>) </div></pre></td></tr></table></figure>
+
+<p>The actual contents of the underscore templates in the *.html templates will<br>now be compiled and loaded into “templates[data-name]” where I can access it later.</p>
+<h3 id="Creating_our_own_Base_Backbone_Objects-">Creating our own Base Backbone Objects.</h3>
+<p>The first thing we want to do is determie the shared behavior of backbone objects<br>in our app. For special cases we can overide them later. However, for the sake of time, we<br>want some decalrative way of telling the object what template to use and a default render()<br>method that we can use in most situations.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//first we declare a namespace to store these new Objects</span></div><div class="line">application = {};</div><div class="line">application.BaseView = Backbone.View.extend({</div><div class="line">  initialize: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    Backbone.View.prototype.initialize.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.model) {</div><div class="line">      <span class="keyword">this</span>.listenTo(<span class="keyword">this</span>.model, <span class="string">'change'</span>, <span class="keyword">this</span>.render);</div><div class="line">    }</div><div class="line">    <span class="comment">/*</span></div><div class="line">      if the BaseView is extended with a tpl string, we want to </div><div class="line">      have that be available but we also want to be able to load </div><div class="line">      it at runtime and have it overide the base tpl string</div><div class="line">    */</div><div class="line">    <span class="keyword">this</span>.tpl = options.tpl || <span class="keyword">this</span>.tpl</div><div class="line">    <span class="keyword">this</span>.loadTemplate(<span class="keyword">this</span>.tpl);</div><div class="line">  }</div><div class="line">  loadTemplate: <span class="function"><span class="keyword">function</span><span class="params">(tpl)</span> </span>{</div><div class="line">    <span class="comment">/*  </span></div><div class="line">      if tpl is a function, we assign it directly, </div><div class="line">      otherwise, if its a string, we look it up</div><div class="line">      in our templates map.</div><div class="line">    */</div><div class="line">    <span class="keyword">if</span> (_.isFunction(tpl)) {</div><div class="line">      <span class="keyword">this</span>.template = tpl;</div><div class="line">    } <span class="keyword">else</span> <span class="keyword">if</span> (_.isString(tpl)) {</div><div class="line">      <span class="keyword">this</span>.template = template[tpl];</div><div class="line">    } <span class="keyword">else</span> {</div><div class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'tpl must be a function or a string!'</span>);</div><div class="line">    }</div><div class="line">  }</div><div class="line">  render: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="comment">//see below</span></div><div class="line">  }</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>Next up we need to create a render function. Its arbitrary based on the particular<br>needs of your application. For most purposes however, Its sufficiant to make a<br>view’s model’s attributes available inside the templates.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//from the render in the preceeding example</span></div><div class="line">render: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">this</span>.$el.html(<span class="string">''</span>);<span class="comment">//empty the view's node</span></div><div class="line">  <span class="keyword">var</span> context = {}; <span class="comment">//create a context object</span></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.model) {</div><div class="line">    _.extend(context, <span class="keyword">this</span>.model.attributes);</div><div class="line">  }</div><div class="line">  <span class="keyword">this</span>.$el.html(<span class="keyword">this</span>.template(context));</div><div class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>Here’s a great first start. Now any View that extends BaseView will have a<br>render. The only interface we must follow is that the View have a model<br>and a tpl which tells the View how to resolve this.template.</p>
+<p>Of course there’s a major component missing. Any good backbone framework<br>has a way of embedding subViews. Turns out its sort of tricky.</p>
+<p>The Lifecycle of a Backbone view in this case is to listen to changes on<br>model and call render() which updates the view’s $el property. Thus its<br>impossible to proceed until this.$el is completely demystified.</p>
+<h4 id="what_is_$el?">what is $el?</h4>
+<p>I’ve heard alot of confusion about the nature of ‘this.$el’. Typically, a Backbone<br>View is a controller for a node. This node is a structure relevant to the<br>document object model.</p>
+<p>you may be familiar with a dom object if you’ve used jquery.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> $body = $(<span class="string">'body'</span>); <span class="comment">// =&gt; returns a jquery wrapped object</span></div><div class="line">$body[<span class="number">0</span>] <span class="comment">//returns the wrapped object representing the body dom node.</span></div></pre></td></tr></table></figure>
+
+<p>In much the same way, a backbone view is a controller for a dom object.</p>
+<p>You may have seen the kickstart for a backbone app that involves doing a jquery<br>lookup on a node and setting its html to your view’s $el property</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> $container =  $(<span class="string">'.container'</span>);</div><div class="line">$container.html(view.render().$el);</div></pre></td></tr></table></figure>
+
+<p>Assuming the render() method of the view returns ‘this’, then calling it before calling the<br>$el property guarantees that the dom object managed by the view will be updated before being<br>placed in the dom. When render() is called again, it updates the <em>contents</em> of that $el. The<br>$container has a reference to $el stored in it thus ensuring that calling render() will change<br>the webpage to reflect the latest state of the model.</p>
+<h4 id="Extending_out_Render()_to_support_subViews-">Extending out Render() to support subViews.</h4>
+<p>With the afformentioned definition of $el in mind, The best way to embed a subview<br>(with string based template engines, you do something else with dom based ones.) is to do an<br>initial render of the dom node marking off somehow places to embed subviews. Then afterwards,<br>go back through the $el and systematically embed $el for each subview in their respective places.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//updated render()</span></div><div class="line"><span class="keyword">this</span>.$el.html(<span class="string">''</span>);</div><div class="line"><span class="keyword">var</span> context = {};</div><div class="line">context._subView = <span class="function"><span class="keyword">function</span><span class="params">(viewName)</span> </span>{</div><div class="line">  <span class="keyword">return</span> <span class="string">'&lt;div class="subView view-'</span> + viewName + <span class="string">'"&gt;&lt;/div&gt;'</span>;</div><div class="line">};</div><div class="line"><span class="keyword">if</span> (<span class="keyword">this</span>.model) {</div><div class="line">  _.extend(context, <span class="keyword">this</span>.model.attributes);</div><div class="line">}</div><div class="line"><span class="comment">//pop it in the dom</span></div><div class="line"><span class="keyword">this</span>.$el.html(<span class="keyword">this</span>.template(context));</div><div class="line"><span class="comment">//notice we do this AFTER we rerender the new this.$el</span></div><div class="line"><span class="keyword">var</span> subViews = <span class="keyword">this</span>.subViews;</div><div class="line"><span class="keyword">this</span>.$el.find(<span class="string">'.subView'</span>).each(_.bind(<span class="function"><span class="keyword">function</span><span class="params">(index, el)</span> </span>{</div><div class="line">  <span class="keyword">var</span> $el = $(el);</div><div class="line">  <span class="comment">// view-</span></div><div class="line">  <span class="keyword">var</span> subView = _(<span class="built_in">Array</span>.prototype.slice.call(el.classList)).chain()</div><div class="line">    .filter(<span class="function"><span class="keyword">function</span><span class="params">(className, index)</span> </span>{</div><div class="line">      <span class="keyword">return</span> (className.match(<span class="regexp">/^view-/</span>));</div><div class="line">    }, <span class="keyword">this</span>)</div><div class="line">    .map(<span class="function"><span class="keyword">function</span><span class="params">(className)</span> </span>{</div><div class="line">      <span class="keyword">return</span> className.slice(<span class="number">5</span>);</div><div class="line">    }, <span class="keyword">this</span>)</div><div class="line">    .value()[<span class="number">0</span>]; <span class="comment">//grab the first item</span></div><div class="line">  $el.html(subViews[subView].render().$el);</div><div class="line">}, <span class="keyword">this</span>));</div><div class="line"></div><div class="line"><span class="keyword">return</span> <span class="keyword">this</span>;</div></pre></td></tr></table></figure>
+
+<p>There’s a new things we’ve added to this version. </p>
+<ol>
+<li>There is now a ‘subView()’ helper being passed into context, this will generate<br>the slug that we will look for when embedding a subview.</li>
+<li>After the $el is rendered, we are searching for dom elements with class subview</li>
+<li>for each subView, we find the name of the subview we embed in there given as<br>view-[viewName] and look it up in the view’s subViews key/val lookup object.<br>Its a property of teh parent view.</li>
+</ol>
+<p>With this, we now have an easy way of supporting subviews.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">childView = <span class="keyword">new</span> application.BaseView({</div><div class="line">  tpl: <span class="string">'child'</span></div><div class="line">});</div><div class="line"></div><div class="line"><span class="keyword">var</span> parentView = <span class="keyword">new</span> application.BaseView({</div><div class="line">  tpl: <span class="string">'parent'</span></div><div class="line">  subViews: {</div><div class="line">    child: childView</div><div class="line">  }</div><div class="line">});</div><div class="line"></div><div class="line">$(<span class="string">'div.container'</span>).html(parentView.render().$el);</div></pre></td></tr></table></figure>
+
+<p>In parentView’s template, its as simple as using out new subView helper</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/template"</span> <span class="attribute">date-name</span>=<span class="value">"parent"</span>&gt;</span><span class="javascript"></span></div><div class="line">  &lt;p&gt;</div><div class="line">    <span class="xml"><span class="vbscript">&lt;%= _subView(<span class="comment">'child') %&gt;</span></span></span></div><div class="line">  <span class="tag">&lt;/<span class="title">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">script</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/template"</span> <span class="attribute">date-name</span>=<span class="value">"child"</span>&gt;</span><span class="javascript"></span></div><div class="line">  &lt;span&gt; hi I<span class="string">'m the child view!! &lt;/span&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">script</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>In the next installment in this series, we’ll build a base ControllerView class which we<br>can use to render generic collections. Yes, they’ll be embedable as subviews in our BaseView.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/01/06/lets-build-a-backbone-based-framework/" data-id="kxsvneyv87n2a7uu" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+  
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Javascript-prototypes/">Javascript, prototypes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/algorithms-sorting-python/">algorithms sorting python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-javascript/">backbone javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-thorax-defineProperty/">backbone thorax defineProperty</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/functional-programming-ecmascript6-javascript-generators/">functional-programming ecmascript6 javascript generators</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/generators-promises/">generators promises</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-algorithms-sorting/">javascript algorithms sorting</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-backbone-js-models-mvc/">javascript backbone.js models mvc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-scoping/">javascript scoping</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/koa-generators-javascript-harmony-ecmascript6/">koa generators javascript harmony ecmascript6</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-javascript-systems-process/">node javascript systems process</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-process-fork/">node process fork</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/09/">September 2012</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2014/02/08/functional-programming-with-ecmascript6-generators/">Functional programming with ecmascript6 generators</a>
+          </li>
+        
+          <li>
+            <a href="/2014/02/01/koa-zero-to-todo-list/">koa: zero to todo list</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/22/javascript-generators-first-impressions/">javascript generators: first impressions</a>
+          </li>
+        
+          <li>
+            <a href="/2014/01/06/lets-build-a-backbone-based-framework/">lets build a backbone based framework!!</a>
+          </li>
+        
+          <li>
+            <a href="/2013/07/16/lexically-scope-like-a-boss/">How to lexically scope like a boss</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+
+  </div>
+</body>
+</html>

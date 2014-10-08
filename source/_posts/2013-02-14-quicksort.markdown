@@ -1,15 +1,13 @@
 ---
-layout: post
-title: "Quicksort Algorithm in Javascript"
-date: 2013-02-14 18:49
-comments: true
+
+layout: post title: "Quicksort Algorithm in Javascript" date: 2013-02-14 18:49 comments: true
+
 categories: javascript algorithms sorting
----
+-----------------------------------------
 
-Here's a basic Quicksort algorithm. You can call this code using Node.js 
+Here's a basic Quicksort algorithm. You can call this code using Node.js
 
-
-{% codeblock lang:javascript %}
+```javascript
 var Sort = require('./quicksort.js');
 list = [3, 4, 5,2, 5];
 var sorted = Sort(list, function(a, b) {
@@ -21,12 +19,11 @@ var sorted = Sort(list, function(a, b) {
 		return -1;
 	}
 });
-{% endcodeblock %}
+```
 
 have fun and hope this proves useful to somebody!
 
-
-{% codeblock lang:javascript %}
+```javascript
 //quicksort.js
 module.exports = function(list1, compareFunction) {
     var list = list1;
@@ -88,4 +85,4 @@ module.exports = function(list1, compareFunction) {
     return list1;
 
 }
-{% endcodeblock %}
+```

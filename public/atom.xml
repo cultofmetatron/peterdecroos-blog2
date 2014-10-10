@@ -1,105 +1,306 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[Console.blog]]></title>
+  <subtitle><![CDATA[nihilist code redux]]></subtitle>
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://blog.peterdecroos.com/"/>
+  <updated>2014-10-10T23:32:45.597Z</updated>
+  <id>http://blog.peterdecroos.com/</id>
   
-  <title>Archives: 2013 | Console.blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="assorted writings">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Console.blog">
-<meta property="og:url" content="http://blog.peterdecroos.com/archives/2013/">
-<meta property="og:site_name" content="Console.blog">
-<meta property="og:description" content="assorted writings">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Console.blog">
-<meta name="twitter:description" content="assorted writings">
+  <author>
+    <name><![CDATA[Peter de Croos]]></name>
+    <email><![CDATA[peter@peterdecroos.com]]></email>
+  </author>
+  
+  <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Functional programming with ecmascript6 generators]]></title>
+    <link href="http://blog.peterdecroos.com/2014/02/08/functional-programming-with-ecmascript6-generators/"/>
+    <id>http://blog.peterdecroos.com/2014/02/08/functional-programming-with-ecmascript6-generators/</id>
+    <published>2014-02-09T03:12:00.000Z</published>
+    <updated>2014-10-10T22:58:57.000Z</updated>
+    <content type="html"><![CDATA[<p>The web is abuzz right now with ecmascript 6 on the horizon. If you get node 0.11, you can use it server side already. Once of the big features I&#39;m excited about 
+are generators.</p>
+<p>I&#39;ve <a href="http://blog.peterdecroos.com/blog/2014/01/22/javascript-generators-first-impressions/" target="_blank" rel="external">blogged about them previously</a> 
+Alas, I&#39;ve only found nothing out there on the web that covers anything beyond basic instatiation and invocation. 
+With just that to go on, it was hard for me to initially see the hype. A few days ago, I had an appifany. </p>
+<p>Generators are first class objects. Like functions, they can be composed from smaller parts. Therefore,
+much of we know about functions can be applied to generators!</p>
+<p>On that note, I will lay the ground work for understanding how to really USE generators.</p>
+<h3 id="it-all-starts-with-a-bind">It all starts with a bind</h3><p>If you&#39;ve worked with javascript for any of length of time, You should be familiar with bind.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> bind = <span class="function"><span class="keyword">function</span><span class="params">(fn, ctx, args)</span> </span>{</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="keyword">return</span> fn.apply(ctx, <span class="built_in">arguments</span>);</div><div class="line">  }</div><div class="line">}</div></pre></td></tr></table></figure>
 
-  
-    <link rel="alternative" href="/atom.xml" title="Console.blog" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
+<p>A function has 2 diffrent modes, literal and called. </p>
+<ul>
+<li><p>Literal: a function itself, its not being run.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> something = <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'do something'</span>);</div><div class="line">}</div><div class="line">    </div></pre></td></tr></table></figure>
+</li>
+<li><p>Called: running the function which gives us its return value along with side effects.</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">something();</div></pre></td></tr></table></figure>
 
-  <!--[if lt IE 9]><script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
-  
-</head>
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Console.blog</a>
-      </h1>
-      
-        <h2 id="subtitle-wrap">
-          <a href="/" id="subtitle">nihilist code redux</a>
-        </h2>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="http://www.baidu.com/baidu" method="get" accept-charset="utf-8" class="search-form">
-          <input type="search" name="word" maxlength="20" class="search-form-input" placeholder="Search">
-          <input type="submit" value="" class="search-form-submit">
-          <input name=tn type=hidden value="bds">
-          <input name=cl type=hidden value="3">
-          <input name=ct type=hidden value="2097152">
-          <input type="hidden" name="si" value="blog.peterdecroos.com">
-        </form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-lexically-scope-like-a-boss" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/07/16/lexically-scope-like-a-boss/" class="article-date">
-  <time datetime="2013-07-17T05:27:00.000Z" itemprop="datePublished">Jul 16 2013</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/javascript-scoping/">javascript scoping</a>
-  </div>
+<p>The bind is implimented by taking a literal function and calling it within another
+literal function passing along the context and possible arguments using .apply().</p>
+<p>A Generator has 3 states,</p>
+<ul>
+<li><p>Literal: A literal Generator function</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Gen = <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> value = <span class="keyword">yield</span> asyncTask();</div><div class="line">  <span class="keyword">return</span> value;</div><div class="line">};</div><div class="line"> </div></pre></td></tr></table></figure>
+</li>
+<li><p>Instantiated: a runnable instance is created by calling the Generator function</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> gen = Gen();</div></pre></td></tr></table></figure>
 
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/07/16/lexically-scope-like-a-boss/">How to lexically scope like a boss</a>
-    </h1>
-  
+<ul>
+<li>Run: You can then iterate through the generator by calling next()</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gen.next();</div></pre></td></tr></table></figure>
 
-      </header>
+<p>Unlike a function, We are going to compose generators to be run inside of a co() function.
+Co will run a generator until it comes accross a yield. Whatever is on
+right side of the yield will be passed into co. the generator will be frozen until the
+value can be resolved. This includes thunks, promises and even other generators!</p>
+<p>A generator equivilent for a bind looks like this.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> bind = <span class="function"><span class="keyword">function</span><span class="params">(genFunc, ctx)</span> </span>{</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">    <span class="keyword">return</span> <span class="keyword">yield</span> genFunc.apply(ctx, <span class="built_in">arguments</span>);</div><div class="line">  };</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>Like functions, generators also have a call() and apply() methods which can be used
+to invoke the function with an explicit context. The yield is there because when we 
+run this new function inside co(), the instantiated generator will be run and the
+return value will be be spat out to be returned by this generator.</p>
+<p>With that in mind, How about a function that takes two generators and runs one inside
+the other? How would we impliment that?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> join = <span class="function"><span class="keyword">function</span><span class="params">(gen1, gen2)</span> </span>{</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">    <span class="keyword">return</span> <span class="keyword">yield</span> gen1.call(<span class="keyword">this</span>, gen2.call(<span class="keyword">this</span>);</div><div class="line">  };</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>With this function in place, we can now run two generators back to back inside 
+a single coroutiine function.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> co = <span class="built_in">require</span>(<span class="string">'co'</span>);</div><div class="line">co(join(<span class="function"><span class="keyword">function</span> *<span class="params">(next)</span> </span>{</div><div class="line">  <span class="keyword">var</span> foo = <span class="keyword">yield</span> next;</div><div class="line">  <span class="built_in">console</span>.log(foo); <span class="comment">// =&gt; 'hello world';</span></div><div class="line">  <span class="keyword">return</span> foo;</div><div class="line">}, <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">return</span> <span class="string">'hello world'</span>;</div><div class="line">})).call(<span class="keyword">this</span>);</div></pre></td></tr></table></figure>
+
+<p>If you are interested in exploring this subject further, I&#39;m working on a javacript
+library for composing generators called <a href="https://github.com/cultofmetatron/Shen" target="_blank" rel="external">Shen</a>.
+Its a toolkit for composing generators for running inside co like lego pieces.</p>
+<p>To give you a taste of its power, Instead of join,
+<a href="https://github.com/cultofmetatron/Shen" target="_blank" rel="external">Shen</a> implements cascade which allows you to 
+merge 1 or more generators.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> shen = <span class="built_in">require</span>(<span class="string">'shen'</span>);</div><div class="line">co(shen.cascade(</div><div class="line">  <span class="function"><span class="keyword">function</span> *<span class="params">(next)</span> </span>{</div><div class="line"><span class="comment">//each yield freezes the generator until the next returns.</span></div><div class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</div><div class="line">    <span class="keyword">yield</span> next;</div><div class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>);</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  },</div><div class="line">  <span class="function"><span class="keyword">function</span> *<span class="params">(next)</span> </span>{</div><div class="line">    <span class="built_in">console</span>.log(<span class="number">2</span>);</div><div class="line">    <span class="keyword">yield</span> next;</div><div class="line">    <span class="built_in">console</span>.log(<span class="number">2</span>);</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  },</div><div class="line">  shen.cascade(</div><div class="line">    <span class="function"><span class="keyword">function</span> *<span class="params">(next)</span> </span>{</div><div class="line">      <span class="comment">//thats right, you can nest them too!</span></div><div class="line">      <span class="built_in">console</span>.log(<span class="number">3</span>);</div><div class="line">      <span class="keyword">return</span> <span class="keyword">yield</span> next</div><div class="line">    },</div><div class="line">    <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">      <span class="keyword">return</span></div><div class="line">  })))();</div><div class="line"></div><div class="line"><span class="comment">/* Outputs</span></div><div class="line">    1</div><div class="line">    2</div><div class="line">    3</div><div class="line">    2</div><div class="line">    1</div><div class="line">  */</div></pre></td></tr></table></figure>
+
+
+<p>Shen functions all compose with each other allowing you to put together generators
+as easily as you would curry a function.</p>
+<p>In addition to cascade and bind, Shen also currently includes...</p>
+<ul>
+<li>branch and dispatch for conditional logic</li>
+<li>delay for... delaying?</li>
+<li>parallel: run several generators and get back an array of the return values</li>
+<li>oscillator: run a generator at a specific interval and get back an immediate event emitter 
+that fires with the latest returned value of the generator</li>
+</ul>
+<p>Current use-cases off the top of my head include using oscillator and parrallel to run several 
+network requests at the same time. you&#39;d get an event emitter with all the returned values in
+one place. One thing to note is that you can&#39;t completely escape callbacks but you can create
+areas in your code where callbacks are invisible. The generator takes care of the hard stuff.</p>
+<p>Its still very much a work in progress and only works on node 0.11 but I invite you all to try it out. 
+If you want to help, I&#39;m always welcome to new ideas for pieces to add to the ecosystem. 
+contributing a few tests or implementations of ideas would be great too!</p>
+<p><a href="https://github.com/cultofmetatron/Shen" target="_blank" rel="external">Here&#39;s the github to the project</a> </p>
+<p>Cheers.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>The web is abuzz right now with ecmascript 6 on the horizon. If you get node 0.11, you can use it server side already. Once of the big fe]]>
+    </summary>
     
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Lexical scoping (scoping accordinng to location in source code) is probably one of<br>the most powerful features a programming language can have.<br>Today, I’m going to show you how to use lexical scoping to<br>create powerful abstractions. I will begin by introducing the concept of scope.<br>From there I will introduce a few rules for figuring out the scope of your variables<br>in javascript and then introduce the concept of a closure and how it will make you<br>positivly badass at Javascript.</p>
+      <category term="functional-programming ecmascript6 javascript generators" scheme="http://blog.peterdecroos.com/categories/functional-programming-ecmascript6-javascript-generators/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[koa: zero to todo list]]></title>
+    <link href="http://blog.peterdecroos.com/2014/02/01/koa-zero-to-todo-list/"/>
+    <id>http://blog.peterdecroos.com/2014/02/01/koa-zero-to-todo-list/</id>
+    <published>2014-02-02T01:12:00.000Z</published>
+    <updated>2014-10-08T01:04:37.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="Note:_you_need_to_run_node_0-11_with_—harmony_to_run_the_code-">Note: you need to run node 0.11 with —harmony to run the code.</h2>
+<p>From the creators of express comes a brand new framework for node powered by<br>the new ecmascript 6 generators syntax. <a href="http://koajs.com/" target="_blank" rel="external">Koa</a> is an interesting<br>reimagining of how we will be able to build web applications in javascript.</p>
+<h3 id="The_old_paradigm">The old paradigm</h3>
+<p>In the standard node library, The ‘http’ module is used to create servers.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> server = http.createServer(<span class="function"><span class="keyword">function</span><span class="params">(req, res)</span> </span>{</div><div class="line">  res.writeHead(<span class="number">200</span>, {<span class="string">'Content-Type'</span>: <span class="string">'text/plain'</span>});</div><div class="line">  <span class="comment">//server logic goes here</span></div><div class="line">  res.end(<span class="string">''</span>);</div><div class="line">});</div><div class="line"></div><div class="line">server.listen(<span class="number">3000</span>, <span class="string">'127.0.0.1'</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'listening on port 3000'</span>);</div></pre></td></tr></table></figure>
+
+<p>Express exposes a function that we can give to<br>http.createServer as a callback. Express middleware is a set of functions that<br>take 3 arguments, req, res and next. The middleware performs some operations, modifies<br>either the request or response objects and passed down to the next middleware in the stack<br>by calling next(). Its akin to a water flow model where the the response ends somewhere<br>near the end of the middleware stack.</p>
+<h3 id="Enter_Koa,_The_generators_based_framework">Enter Koa, The generators based framework</h3>
+<p>Like express, Koa works internally by generating a callback that can be passed to<br>http.createServer().  Unlike Express, it uses generators to provide a much more fine grained<br>model of control flow.</p>
+<p>A very basic koa app looks like this, lets make it serve up the contents of a file</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> koa          = <span class="built_in">require</span>(<span class="string">'koa'</span>);</div><div class="line"><span class="keyword">var</span> Promise      = <span class="built_in">require</span>(<span class="string">'bluebird'</span>);</div><div class="line"></div><div class="line"><span class="comment">//creates promise yielding versions of fs</span></div><div class="line"><span class="keyword">var</span> fs = Promise.promisifyAll(<span class="built_in">require</span>(<span class="string">'fs'</span>));</div><div class="line"><span class="comment">//create the koa instance</span></div><div class="line"><span class="keyword">var</span> app = koa();</div><div class="line"></div><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">(next)</span> </span>{</div><div class="line">  <span class="comment">//here's an example middleware that logs to the console</span></div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'timestamp: before request =&gt; '</span>, time.now());</div><div class="line">  <span class="keyword">yield</span> next</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'timestamp: after request  =&gt; '</span>, time.now());</div><div class="line">});</div><div class="line"></div><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">this</span>.body = <span class="keyword">yield</span> fs.readFileAsync(<span class="string">'./app.js'</span>, <span class="string">'utf8'</span>);</div><div class="line">});</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'now listening on port 3000'</span>);</div></pre></td></tr></table></figure>
+
+<p>Unlike Express, the middleware is written using generators.<br>Downstream middleware in Koa flows upstream on return. Middleware<br>yields down stream by explicitly calling ‘yield next.’. Upon return, the control<br>flow yields back up to where the upstream middleware yielded downstream.</p>
+<p>Where Express passes native node req and res objects through to each function, Koa<br>manages a context where it encapsulates them behind an interface. They are still available<br>through the ‘this’ keyword as this.req and this.res. However, Its not reccomended in<br>the docs that you work with these native objects. One could imagine calling this.res.end(‘’)<br>would throw a monkey wrench in the control flow. Instead you are supposed to work through<br>the this.response and this.request. Most of the methods are aliased directly to this. ‘this.body’<br>for example, is aliased to this.response.body. </p>
+<p>There does not yet appear to be a direct way to get<br>to the request body. The co-body parser accesses the req.body directly so while the docs say<br>don’t do it, Koa is still young so you may have to get your hands dirty.</p>
+<h3 id="A_Todo_app_in_koa">A Todo app in koa</h3>
+<p>Now that we’ve covered the basics, lets try something a little more complex. A todo<br>List seems like a good thing no one has ever tried to make before in any technology ever!<br>To simplify assumptions, lets just store the todos in memory.</p>
+<p>By itself, Koa is very minimalistic. It does not provide body parsing, sessions, or<br>routing in the core. Unfortunately Koa is still young so there just aren’t that many<br>npm modules for it just yet. A quick search on <a href="https://github.com/koajs/koa/wiki" target="_blank" rel="external">the Koa website</a><br>shows that we do have the necessary modules for a basic todo.</p>
+<ol>
+<li><a href="https://github.com/koajs/route" target="_blank" rel="external">koa-route</a>: for routing</li>
+<li><a href="https://github.com/visionmedia/co-body" target="_blank" rel="external">co-body</a>: for parsing the body of post requests</li>
+<li><a href="https://github.com/koajs/static" target="_blank" rel="external">koa-static</a>: for serving up static assets</li>
+</ol>
+<p>Here’s the basic server side api</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//jshint esnext</span></div><div class="line"><span class="keyword">var</span> koa          = <span class="built_in">require</span>(<span class="string">'koa'</span>);</div><div class="line"><span class="keyword">var</span> staticServer = <span class="built_in">require</span>(<span class="string">'koa-static'</span>);</div><div class="line"></div><div class="line"><span class="comment">//this allows us to parse the native req object to get the body</span></div><div class="line"><span class="keyword">var</span> parse        = <span class="built_in">require</span>(<span class="string">'co-body'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> router       = <span class="built_in">require</span>(<span class="string">'koa-route'</span>);</div><div class="line"><span class="keyword">var</span> _            = <span class="built_in">require</span>(<span class="string">'underscore'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> Promise      = <span class="built_in">require</span>(<span class="string">'bluebird'</span>);</div><div class="line"><span class="keyword">var</span> path         = <span class="built_in">require</span>(<span class="string">'path'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> fs = Promise.promisifyAll(<span class="built_in">require</span>(<span class="string">'fs'</span>));</div><div class="line"><span class="keyword">var</span> app = koa();</div><div class="line"><span class="comment">//our very basic data store</span></div><div class="line"><span class="keyword">var</span> todos = [];</div><div class="line"></div><div class="line"><span class="comment">//gets us unique ids</span></div><div class="line"><span class="keyword">var</span> counter = (<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> count = <span class="number">0</span>;</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    count++;</div><div class="line">    <span class="keyword">return</span> count;</div><div class="line">  };</div><div class="line">})();</div><div class="line"></div><div class="line"><span class="comment">//serve up the public directory where we have all the assets</span></div><div class="line">app.use(staticServer(path.join(__dirname, <span class="string">'public'</span>)));</div><div class="line"></div><div class="line">app.use(router.post(<span class="string">'/todos'</span>, <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="comment">/*</span></div><div class="line">    yield lets us pass asynchronous functions that return promises or thunks</div><div class="line">    It will freeze the middleware till its resolved and pass it back in.</div><div class="line">  */</div><div class="line">  <span class="keyword">var</span> todo = (<span class="keyword">yield</span> parse.json(<span class="keyword">this</span>));</div><div class="line"></div><div class="line">  todo.id = counter();</div><div class="line">  todos.push(todo);</div><div class="line">  <span class="keyword">this</span>.body = <span class="built_in">JSON</span>.stringify(todos);</div><div class="line">}));</div><div class="line"></div><div class="line"></div><div class="line">app.use(router.get(<span class="string">'/todos'</span>, <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">this</span>.body = <span class="built_in">JSON</span>.stringify(todos);</div><div class="line">}));</div><div class="line"></div><div class="line">app.use(router.delete(<span class="string">'/todos/:id'</span>, <span class="function"><span class="keyword">function</span> *<span class="params">(id)</span> </span>{</div><div class="line">  todos = _(todos).reject(<span class="function"><span class="keyword">function</span><span class="params">(todo)</span> </span>{</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'what? '</span>, todo, id );</div><div class="line">    <span class="keyword">return</span> todo.id === <span class="built_in">parseInt</span>(id, <span class="number">10</span>);</div><div class="line">  }, <span class="keyword">this</span>);</div><div class="line">  <span class="keyword">this</span>.body = <span class="built_in">JSON</span>.stringify(todos.sort(<span class="function"><span class="keyword">function</span><span class="params">(a, b)</span> </span>{ <span class="keyword">return</span> a - b;}));</div><div class="line">}));</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'listening on port 3000'</span>);</div></pre></td></tr></table></figure>
+
+<p><a href="https://github.com/cultofmetatron/koa-todo" target="_blank" rel="external">Download the code on github</a><br>The github version includes frontend code.</p>
+<h4 id="A_few_things_of_note:">A few things of note:</h4>
+<p>The ‘yield’ keyword ca do some interesting things. If we pass into it<br>an asynchronous function that returns a thunk or promise, it will stop execution of<br>the middleware and wait till it resolves. It then returns the value of the promise or thunk<br>and resumes the generator. This is a hell of a lot easier to read.</p>
+<h4 id="A_word_of_caution">A word of caution</h4>
+<p>The ‘yield’ keyword lets us do some safe blocking but it isn’t always the ideal solution.<br>While the event loop itself isn’t blocked by it the way futures can, it does block resuming<br>of any operations that occur after it. </p>
+<p>For example, if we run three asynchronous operations top to bottom that do not depend on<br>each other, like the following…</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> a = <span class="keyword">yield</span> async1();</div><div class="line">  <span class="keyword">var</span> b = <span class="keyword">yield</span> async2();</div><div class="line">  <span class="keyword">var</span> c = <span class="keyword">yield</span> async3();</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>This completely defeats the purpose of node’s (almost automatic) concurrency. When we call<br>async1, we are blocking until async2 runs. This is unoptimal. It would be better to get the promises<br>for the three functions and yield on a merged promise.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> a = async1();</div><div class="line">  <span class="keyword">var</span> b = async2();</div><div class="line">  <span class="keyword">var</span> c = async3();</div><div class="line">  <span class="keyword">var</span> result = <span class="keyword">yield</span> Promise.all([a, b, c]);</div><div class="line">});</div></pre></td></tr></table></figure>
+
+
+<p>I’m excited to cut my teeth on some bigger problems. As the framework matures, Its going to<br>allow more fine grained control for how we write the next generation of web applications.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="Note:_you_need_to_run_node_0-11_with_—harmony_to_run_the_code-">Note: you need to run node 0.11 with —harmony to run the code.</h2>
+]]>
+    </summary>
+    
+      <category term="koa generators javascript harmony ecmascript6" scheme="http://blog.peterdecroos.com/categories/koa-generators-javascript-harmony-ecmascript6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[javascript generators: first impressions]]></title>
+    <link href="http://blog.peterdecroos.com/2014/01/22/javascript-generators-first-impressions/"/>
+    <id>http://blog.peterdecroos.com/2014/01/22/javascript-generators-first-impressions/</id>
+    <published>2014-01-23T00:03:00.000Z</published>
+    <updated>2014-10-08T01:04:02.000Z</updated>
+    <content type="html"><![CDATA[<p>Ecmascript 6 (harmony) is coming out soon and one of the most exciting features it offers are generators.<br>Generators are a minimalist flow control system that gives a much finer grained level of control than we were afforded up till now.</p>
+<blockquote>
+<p>Note: the code in this blog will only run in node v0.11.x when run as —harmony.</p>
+</blockquote>
+<p>Like a function, a generator is an object that declares some behavior.<br>Its first class just like javascript functions and you can pass it around as values and return them from other functions.</p>
+<p>A generator is declared like a function only with a ‘*’ before the parens. We then create an instance of the generator by calling it.</p>
+<p>Here’s a basic example.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line">var myGenerator = function *() { var foo = yield 5; console.log('this doesn't get written until the second call to next()'); };</div><div class="line"></div><div class="line">var gen = myGenerator(); var state = gen.next(); console.log(state.value) //=&gt; 5</div></pre></td></tr></table></figure>
+
+<p>When we run gen.next(), the code executes until we get to yield. The generator then stops which is why the console.log() does not get called. The state of the generator is returned by next which gives us two things.</p>
+<ol>
+<li>state.value: the value on the right side of the yield; in this case 5.</li>
+<li>state.done: a boolean that returns true if there are no more yields in the generator.</li>
+</ol>
+<p>We’ve called gen.next() the one time. The second time we call gen.next(), we have the option of passing in an argument to it that will be returned by yield inside the generator.</p>
+<p>This example shows a more advanced example of bidirectional passing.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line"><span class="keyword">var</span> myGenerator = <span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{ </div><div class="line">  <span class="keyword">var</span> firstWord = <span class="keyword">yield</span> <span class="number">5</span>; </div><div class="line">  <span class="built_in">console</span>.log(firstWord); <span class="comment">//=&gt; "hello" </span></div><div class="line">  <span class="keyword">var</span> secondWord = <span class="keyword">yield</span> <span class="number">10</span>;</div><div class="line">  <span class="built_in">console</span>.log(secondWord); <span class="comment">//=&gt; "world" </span></div><div class="line">};</div><div class="line"></div><div class="line"><span class="keyword">var</span> gen = myGenerator(); <span class="keyword">var</span> state = gen.next(); <span class="built_in">console</span>.log(state.value); <span class="comment">//=&gt; 5 state = gen.next("hello"); //=&gt; 'hello' gets printed to the screen from inside the generator console.log(state.value); //=&gt; 10 console.log(state.done); //=&gt; false state = gen.next('world'); //=&gt; 'world' gets printed console.log(state.value); //=&gt; 10 console.log(state.done); //=&gt; true</span></div></pre></td></tr></table></figure>
+
+<p>One of the biggest growing pains of javascript development is wrapping one’s head around async programming and functions run asyncronously. Promises give us a value that represents the eventual value returned from an asynchronous function.</p>
+<p>Promises are promised in ecmascript 6 but they aren’t available when I run node 0.11 with —harmony yet so I use <a href="https://github.com/petkaantonov/bluebird" target="_blank" rel="external">Bluebird</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line"><span class="keyword">var</span> Promise = <span class="built_in">require</span>(<span class="string">'bluebird'</span>);</div><div class="line"></div><div class="line"><span class="comment">//extends node's fileSytem with versions of the async functions that return promises //the promisified versions are the original name + 'Async' var fs = Promise.promisifyAll(require('fs'));</span></div><div class="line"></div><div class="line">fs.readFileAsync(<span class="string">'.gitignore'</span>, <span class="string">'utf8'</span>)</div><div class="line">  .then(<span class="function"><span class="keyword">function</span><span class="params">(contents)</span> </span>{ </div><div class="line">    <span class="built_in">console</span>.log(contents); <span class="comment">// prints the contents of the .gitignore file. </span></div><div class="line">  });</div><div class="line"></div><div class="line"><span class="built_in">console</span>.log(<span class="string">'this runs before the callback passed to "then" which is counterintuitive.'</span>) </div></pre></td></tr></table></figure>
+
+<p>This code Works because when the function is called, it creates a closure that doesn’t get garbage collected because the function passed to the promise retains a reference to this scope. When its called, it can operate on variables in this containing scope. However we cannot return to the original function call. Thus Unless you are used to thinking about promises, its a bit unintuitive that the console.log on the following line runs before the callback passed to the then() handler of the promise.</p>
+<p>Generators on the other hand, let us FREEZE the execution context until the file resolves.</p>
+<p>There’s an excellent library called<a href="https://github.com/visionmedia/co" target="_blank" rel="external">co</a> from the creator of express that allows us to create coroutines using generators. thus we could write the previous code using generators.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line"><span class="keyword">var</span> Promise = <span class="built_in">require</span>(<span class="string">'bluebird'</span>); </div><div class="line"><span class="keyword">var</span> fs = Promise.promisifyAll(<span class="built_in">require</span>(<span class="string">'fs'</span>)); </div><div class="line"><span class="keyword">var</span> co = <span class="built_in">require</span>(<span class="string">'co'</span>);</div><div class="line"></div><div class="line">co(<span class="function"><span class="keyword">function</span> *<span class="params">()</span></span>{ </div><div class="line">  <span class="keyword">var</span> a = <span class="keyword">yield</span> fs.readFileAsync(<span class="string">'.gitignore'</span>, <span class="string">'utf8'</span>); </div><div class="line">  <span class="built_in">console</span>.log(a); <span class="comment">//this doesn't run until the previous function resolves. </span></div><div class="line">  <span class="keyword">var</span> c = <span class="keyword">yield</span> fs.readFileAsync(<span class="string">'package.json'</span>, <span class="string">'utf8'</span>); </div><div class="line">  <span class="built_in">console</span>.log(a); </div><div class="line">  <span class="built_in">console</span>.log(c); </div><div class="line">  <span class="keyword">return</span>; </div><div class="line">})();</div></pre></td></tr></table></figure>
+
+<p>This is pretty exciting, This Asyncrouous code looks downright synchronous. Its also running in its own context so it doesn’t block the event loop. Within the generator, we can write much more fine grained flow control for asynchronous functions.</p>
+<p>That said, how does co work? The basic premise is that we use yield to pass back the promise into co where it waits till the function resolves. Then we call the next() of this function passing in the value from the resolved promise.</p>
+<p>co itself is extremely flexible allowing you to pass in thunks, or A+spec promises into yield. Here I’ll demonstrate a simplified version that can accept only promises.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line"></div><div class="line"><span class="keyword">var</span> co = <span class="function"><span class="keyword">function</span><span class="params">(fngen)</span> </span>{ </div><div class="line">  <span class="comment">/* next takes a instatiated generator and calls and a value returned from calling next on it </span></div><div class="line">  gen is an instance of a generator yieldable is the value returned from calling gen.next() */ </div><div class="line">  <span class="keyword">var</span> next = <span class="function"><span class="keyword">function</span><span class="params">(gen, yieldable)</span> </span>{ </div><div class="line">    <span class="keyword">if</span> (! yieldable.done) { </div><div class="line">      <span class="comment">//if //we assume yieldable.value is a promise so we call then() to get the value </span></div><div class="line">      yieldable.value.then(<span class="function"><span class="keyword">function</span><span class="params">(val)</span> </span>{ </div><div class="line">        <span class="comment">/* we call next on gen and pass in the value into gen.next() to inject the value back into out coroutine where it gets returned by the yield in the generator.</span></div><div class="line">        By call gen.next(val), gen resumes execustion passing val back</div><div class="line">        and gen.next() return when it hits the next yield keyword returning</div><div class="line">        the value passed in to yield.</div><div class="line">        */</div><div class="line">    next(gen, gen.next(val));</div><div class="line">  });</div><div class="line">  }</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{ <span class="comment">//instatiate the generator var gensym = fngen(); //get the first yieldable var yieldable = gensym.next(); if (!yieldable.done) { next(gensym, yieldable); } }; };</span></div></pre></td></tr></table></figure>
+
+<p>The concept is pretty simple, yield passed back the value on the right to gen.next() which it returns. The value we pass into the gen.next call to gen.next() becomes the value returned by yield. Sorta like a zig zag or a needle stitching.</p>
+<p>I’m excited to see some of the new projects that will take advantage of this new ecmascript 6 feature. One big example comming to mind is the new koa framework. Unlike its predecessor express/connect, Koa is a set of pluggable middleware components that utilize generators heavily for flow control.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Ecmascript 6 (harmony) is coming out soon and one of the most exciting features it offers are generators.<br>Generators are a minimalist ]]>
+    </summary>
+    
+      <category term="generators promises" scheme="http://blog.peterdecroos.com/categories/generators-promises/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[lets build a backbone based framework!!]]></title>
+    <link href="http://blog.peterdecroos.com/2014/01/06/lets-build-a-backbone-based-framework/"/>
+    <id>http://blog.peterdecroos.com/2014/01/06/lets-build-a-backbone-based-framework/</id>
+    <published>2014-01-06T21:57:00.000Z</published>
+    <updated>2014-10-08T00:10:15.000Z</updated>
+    <content type="html"><![CDATA[<p>I’ve been building large scale applications in Backbone for about 8 months now.<br>In that time I’ve used throax as well as building custom solutions in backbone. </p>
+<p>Last night, I live coded the creation of a demo backbone framework similar in features<br>to Thorax. I’m going to walk you through how<br>I’ve solved architectural problems in contructing a large scale backbone framework.</p>
+<p><a href="https://github.com/cultofmetatron/backbone-framework-example" target="_blank" rel="external">Fork or watch it here</a></p>
+<p>When building a large scale Backbone, there are several consderations to consider.</p>
+<ul>
+<li>How are we going to have templates load? Inline html declarations in the views do not scale</li>
+<li>how do we handle render?</li>
+<li>how do we handle child views?</li>
+</ul>
+<p>By default, backboneView.render() is a noop. Its meant to be overidden. Backbone.Events gives us<br>a nice set of methods to allow Backbone objects to listenTo() events off each other, However, the<br>actual bindings and callbacks are left to the implimenter.</p>
+<h3 id="Loading_Templates">Loading Templates</h3>
+<p>the first thing is figure out how we want the templates to load. If using a tool like require.js<br>or browserify, there are plugins for automatically compiling templates and sending to the client<br>just a compiled template function we can plug into out view. Since I’m trying to keep it simple,<br>the easiest way to get templates is to wrap your templates in a script tag. To prevent the browser<br>from executing it as javascript, we add a type that is not ‘text/javascript’.</p>
+<p>I like to use “text/template.”</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/template"</span> <span class="attribute">data-name</span>=<span class="value">"templateName"</span>&gt;</span><span class="javascript"></span></div><div class="line">  &lt;!-- template contents goes here --&gt;</div><div class="line"><span class="tag">&lt;/<span class="title">script</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>Transforming these into working templates is fairly straightforward. For each<br>script tag with type=”text/template”, run the template compiler over the html inside and<br>store it somewhere. In this case I add a data-name attribute which will be the key for the<br>hash I store the compiled template in.</p>
+<p><a href="https://github.com/cultofmetatron/backbone-framework-example/blob/master/public/javascripts/init.js" target="_blank" rel="external">/public/javascripts/init.js</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.templates = {};</div><div class="line"><span class="keyword">var</span> $sources = $(<span class="string">'script[type="text/template"]'</span>);</div><div class="line">$sources.each(<span class="function"><span class="keyword">function</span><span class="params">(index, el)</span> </span>{</div><div class="line">  <span class="keyword">var</span> $el = $(el);</div><div class="line">  templates[$el.data(<span class="string">'name'</span>)] = _.template($el.html());</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>In this version, I chose to use express + jade, Of course writing underscore templates<br>in jade seemed a little odd so I delegated those to jade’s include statement. I know there<br>are projects like jade-browserify so maybe I’ll eventually update this using just jade.</p>
+<p><a href="https://github.com/cultofmetatron/backbone-framework-example/blob/master/views/layout.jade" target="_blank" rel="external">/views/layout.jade</a></p>
+<figure class="highlight jade"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">doctype html</div><div class="line">html</div><div class="line">  head</div><div class="line">    <span class="variable">title=</span> title</div><div class="line">    link( <span class="variable">rel=</span><span class="string">"stylesheet"</span>, <span class="variable">href=</span>'/components/bootstrap/dist/css/bootstrap.css')</div><div class="line">    link( <span class="variable">rel=</span><span class="string">"stylesheet"</span>, <span class="variable">href=</span>'/stylesheets/style.css')</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/components/jquery/jquery.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/components/bootstrap/dist/js/bootstrap.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/components/underscore/underscore.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/components/backbone/backbone.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/javascripts/base.js"</span>)</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/javascripts/application.js"</span>)</div><div class="line">  body</div><div class="line">    block content</div><div class="line">    script(<span class="variable">type=</span><span class="string">"text/template"</span>, <span class="variable">data-name=</span><span class="string">"main"</span>)</div><div class="line">      include templates/main.html</div><div class="line">    script(<span class="variable">type=</span><span class="string">"text/template"</span>, <span class="variable">data-name=</span><span class="string">"header"</span>)</div><div class="line">      include templates/header.html</div><div class="line">    script(<span class="variable">type=</span><span class="string">"text/template"</span>, <span class="variable">data-name=</span><span class="string">"menuLinks"</span>)</div><div class="line">      include templates/menulink.html</div><div class="line">    script( <span class="variable">src=</span><span class="string">"/javascripts/init.js"</span>) </div></pre></td></tr></table></figure>
+
+<p>The actual contents of the underscore templates in the *.html templates will<br>now be compiled and loaded into “templates[data-name]” where I can access it later.</p>
+<h3 id="Creating_our_own_Base_Backbone_Objects-">Creating our own Base Backbone Objects.</h3>
+<p>The first thing we want to do is determie the shared behavior of backbone objects<br>in our app. For special cases we can overide them later. However, for the sake of time, we<br>want some decalrative way of telling the object what template to use and a default render()<br>method that we can use in most situations.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//first we declare a namespace to store these new Objects</span></div><div class="line">application = {};</div><div class="line">application.BaseView = Backbone.View.extend({</div><div class="line">  initialize: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    Backbone.View.prototype.initialize.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.model) {</div><div class="line">      <span class="keyword">this</span>.listenTo(<span class="keyword">this</span>.model, <span class="string">'change'</span>, <span class="keyword">this</span>.render);</div><div class="line">    }</div><div class="line">    <span class="comment">/*</span></div><div class="line">      if the BaseView is extended with a tpl string, we want to </div><div class="line">      have that be available but we also want to be able to load </div><div class="line">      it at runtime and have it overide the base tpl string</div><div class="line">    */</div><div class="line">    <span class="keyword">this</span>.tpl = options.tpl || <span class="keyword">this</span>.tpl</div><div class="line">    <span class="keyword">this</span>.loadTemplate(<span class="keyword">this</span>.tpl);</div><div class="line">  }</div><div class="line">  loadTemplate: <span class="function"><span class="keyword">function</span><span class="params">(tpl)</span> </span>{</div><div class="line">    <span class="comment">/*  </span></div><div class="line">      if tpl is a function, we assign it directly, </div><div class="line">      otherwise, if its a string, we look it up</div><div class="line">      in our templates map.</div><div class="line">    */</div><div class="line">    <span class="keyword">if</span> (_.isFunction(tpl)) {</div><div class="line">      <span class="keyword">this</span>.template = tpl;</div><div class="line">    } <span class="keyword">else</span> <span class="keyword">if</span> (_.isString(tpl)) {</div><div class="line">      <span class="keyword">this</span>.template = template[tpl];</div><div class="line">    } <span class="keyword">else</span> {</div><div class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'tpl must be a function or a string!'</span>);</div><div class="line">    }</div><div class="line">  }</div><div class="line">  render: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="comment">//see below</span></div><div class="line">  }</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>Next up we need to create a render function. Its arbitrary based on the particular<br>needs of your application. For most purposes however, Its sufficiant to make a<br>view’s model’s attributes available inside the templates.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//from the render in the preceeding example</span></div><div class="line">render: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">this</span>.$el.html(<span class="string">''</span>);<span class="comment">//empty the view's node</span></div><div class="line">  <span class="keyword">var</span> context = {}; <span class="comment">//create a context object</span></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.model) {</div><div class="line">    _.extend(context, <span class="keyword">this</span>.model.attributes);</div><div class="line">  }</div><div class="line">  <span class="keyword">this</span>.$el.html(<span class="keyword">this</span>.template(context));</div><div class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>Here’s a great first start. Now any View that extends BaseView will have a<br>render. The only interface we must follow is that the View have a model<br>and a tpl which tells the View how to resolve this.template.</p>
+<p>Of course there’s a major component missing. Any good backbone framework<br>has a way of embedding subViews. Turns out its sort of tricky.</p>
+<p>The Lifecycle of a Backbone view in this case is to listen to changes on<br>model and call render() which updates the view’s $el property. Thus its<br>impossible to proceed until this.$el is completely demystified.</p>
+<h4 id="what_is_$el?">what is $el?</h4>
+<p>I’ve heard alot of confusion about the nature of ‘this.$el’. Typically, a Backbone<br>View is a controller for a node. This node is a structure relevant to the<br>document object model.</p>
+<p>you may be familiar with a dom object if you’ve used jquery.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> $body = $(<span class="string">'body'</span>); <span class="comment">// =&gt; returns a jquery wrapped object</span></div><div class="line">$body[<span class="number">0</span>] <span class="comment">//returns the wrapped object representing the body dom node.</span></div></pre></td></tr></table></figure>
+
+<p>In much the same way, a backbone view is a controller for a dom object.</p>
+<p>You may have seen the kickstart for a backbone app that involves doing a jquery<br>lookup on a node and setting its html to your view’s $el property</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> $container =  $(<span class="string">'.container'</span>);</div><div class="line">$container.html(view.render().$el);</div></pre></td></tr></table></figure>
+
+<p>Assuming the render() method of the view returns ‘this’, then calling it before calling the<br>$el property guarantees that the dom object managed by the view will be updated before being<br>placed in the dom. When render() is called again, it updates the <em>contents</em> of that $el. The<br>$container has a reference to $el stored in it thus ensuring that calling render() will change<br>the webpage to reflect the latest state of the model.</p>
+<h4 id="Extending_out_Render()_to_support_subViews-">Extending out Render() to support subViews.</h4>
+<p>With the afformentioned definition of $el in mind, The best way to embed a subview<br>(with string based template engines, you do something else with dom based ones.) is to do an<br>initial render of the dom node marking off somehow places to embed subviews. Then afterwards,<br>go back through the $el and systematically embed $el for each subview in their respective places.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//updated render()</span></div><div class="line"><span class="keyword">this</span>.$el.html(<span class="string">''</span>);</div><div class="line"><span class="keyword">var</span> context = {};</div><div class="line">context._subView = <span class="function"><span class="keyword">function</span><span class="params">(viewName)</span> </span>{</div><div class="line">  <span class="keyword">return</span> <span class="string">'&lt;div class="subView view-'</span> + viewName + <span class="string">'"&gt;&lt;/div&gt;'</span>;</div><div class="line">};</div><div class="line"><span class="keyword">if</span> (<span class="keyword">this</span>.model) {</div><div class="line">  _.extend(context, <span class="keyword">this</span>.model.attributes);</div><div class="line">}</div><div class="line"><span class="comment">//pop it in the dom</span></div><div class="line"><span class="keyword">this</span>.$el.html(<span class="keyword">this</span>.template(context));</div><div class="line"><span class="comment">//notice we do this AFTER we rerender the new this.$el</span></div><div class="line"><span class="keyword">var</span> subViews = <span class="keyword">this</span>.subViews;</div><div class="line"><span class="keyword">this</span>.$el.find(<span class="string">'.subView'</span>).each(_.bind(<span class="function"><span class="keyword">function</span><span class="params">(index, el)</span> </span>{</div><div class="line">  <span class="keyword">var</span> $el = $(el);</div><div class="line">  <span class="comment">// view-</span></div><div class="line">  <span class="keyword">var</span> subView = _(<span class="built_in">Array</span>.prototype.slice.call(el.classList)).chain()</div><div class="line">    .filter(<span class="function"><span class="keyword">function</span><span class="params">(className, index)</span> </span>{</div><div class="line">      <span class="keyword">return</span> (className.match(<span class="regexp">/^view-/</span>));</div><div class="line">    }, <span class="keyword">this</span>)</div><div class="line">    .map(<span class="function"><span class="keyword">function</span><span class="params">(className)</span> </span>{</div><div class="line">      <span class="keyword">return</span> className.slice(<span class="number">5</span>);</div><div class="line">    }, <span class="keyword">this</span>)</div><div class="line">    .value()[<span class="number">0</span>]; <span class="comment">//grab the first item</span></div><div class="line">  $el.html(subViews[subView].render().$el);</div><div class="line">}, <span class="keyword">this</span>));</div><div class="line"></div><div class="line"><span class="keyword">return</span> <span class="keyword">this</span>;</div></pre></td></tr></table></figure>
+
+<p>There’s a new things we’ve added to this version. </p>
+<ol>
+<li>There is now a ‘subView()’ helper being passed into context, this will generate<br>the slug that we will look for when embedding a subview.</li>
+<li>After the $el is rendered, we are searching for dom elements with class subview</li>
+<li>for each subView, we find the name of the subview we embed in there given as<br>view-[viewName] and look it up in the view’s subViews key/val lookup object.<br>Its a property of teh parent view.</li>
+</ol>
+<p>With this, we now have an easy way of supporting subviews.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">childView = <span class="keyword">new</span> application.BaseView({</div><div class="line">  tpl: <span class="string">'child'</span></div><div class="line">});</div><div class="line"></div><div class="line"><span class="keyword">var</span> parentView = <span class="keyword">new</span> application.BaseView({</div><div class="line">  tpl: <span class="string">'parent'</span></div><div class="line">  subViews: {</div><div class="line">    child: childView</div><div class="line">  }</div><div class="line">});</div><div class="line"></div><div class="line">$(<span class="string">'div.container'</span>).html(parentView.render().$el);</div></pre></td></tr></table></figure>
+
+<p>In parentView’s template, its as simple as using out new subView helper</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/template"</span> <span class="attribute">date-name</span>=<span class="value">"parent"</span>&gt;</span><span class="javascript"></span></div><div class="line">  &lt;p&gt;</div><div class="line">    <span class="xml"><span class="vbscript">&lt;%= _subView(<span class="comment">'child') %&gt;</span></span></span></div><div class="line">  <span class="tag">&lt;/<span class="title">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">script</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/template"</span> <span class="attribute">date-name</span>=<span class="value">"child"</span>&gt;</span><span class="javascript"></span></div><div class="line">  &lt;span&gt; hi I<span class="string">'m the child view!! &lt;/span&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">script</span>&gt;</span></div></pre></td></tr></table></figure>
+
+<p>In the next installment in this series, we’ll build a base ControllerView class which we<br>can use to render generic collections. Yes, they’ll be embedable as subviews in our BaseView.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>I’ve been building large scale applications in Backbone for about 8 months now.<br>In that time I’ve used throax as well as building cust]]>
+    </summary>
+    
+      <category term="backbone javascript" scheme="http://blog.peterdecroos.com/categories/backbone-javascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[How to lexically scope like a boss]]></title>
+    <link href="http://blog.peterdecroos.com/2013/07/16/lexically-scope-like-a-boss/"/>
+    <id>http://blog.peterdecroos.com/2013/07/16/lexically-scope-like-a-boss/</id>
+    <published>2013-07-17T05:27:00.000Z</published>
+    <updated>2014-10-08T00:10:15.000Z</updated>
+    <content type="html"><![CDATA[<p>Lexical scoping (scoping accordinng to location in source code) is probably one of<br>the most powerful features a programming language can have.<br>Today, I’m going to show you how to use lexical scoping to<br>create powerful abstractions. I will begin by introducing the concept of scope.<br>From there I will introduce a few rules for figuring out the scope of your variables<br>in javascript and then introduce the concept of a closure and how it will make you<br>positivly badass at Javascript.</p>
 <h2 id="What_is_a_scope?">What is a scope?</h2>
 <p>I’m assuming you have written code before. Hell, I’d dare assume you’ve written a <em>var.</em></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> variableName = <span class="string">"variable value"</span>;</div></pre></td></tr></table></figure>
@@ -148,51 +349,22 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> newFile = fileObject(<span class="string">'./hello.txt'</span>);</div><div class="line"></div><div class="line">newFile.done(<span class="function"><span class="keyword">function</span><span class="params">(data)</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'two '</span> + data);</div><div class="line">});</div><div class="line"></div><div class="line">newFile.done(<span class="function"><span class="keyword">function</span><span class="params">(data)</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'one '</span> + data);</div><div class="line">});</div><div class="line"></div><div class="line">newFile.fail(<span class="function"><span class="keyword">function</span><span class="params">(err)</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'the file errored out. returned: '</span> + err);</div><div class="line">});</div><div class="line"></div><div class="line">newFile.always(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'this always gets called'</span>);</div><div class="line">});</div></pre></td></tr></table></figure>
 
 <p>In short, lexical scoping and closures are pretty damn awesome.</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="http://blog.peterdecroos.com/2013/07/16/lexically-scope-like-a-boss/" data-id="k2qqu11k1ce4duib" class="article-share-link" data-share="baidu">Share</a>
-      
-
-      
-
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-thorax-is-awesome" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/07/05/thorax-is-awesome/" class="article-date">
-  <time datetime="2013-07-05T20:45:00.000Z" itemprop="datePublished">Jul 5 2013</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Lexical scoping (scoping accordinng to location in source code) is probably one of<br>the most powerful features a programming language c]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/backbone-thorax-defineProperty/">backbone thorax defineProperty</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="javascript scoping" scheme="http://blog.peterdecroos.com/categories/javascript-scoping/"/>
     
-    
-      <header class="article-header">
-        
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/07/05/thorax-is-awesome/">Thorax is Awesome</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>I like Backbone.js a lot. It’s a fantastic utlity library for building your own best of breed javascript applications. It is much more configurable than Angular or Ember - both of which make numerous assumptions about the nature of your app, which may or may not lead to frustration when working with a legacy codebase. While you certainly won’t be cranking out apps as quickly as you would in more magical frameworks, Backbone gives you enough to get started. It stays slim in features to avoid stepping on your toes. Backbone is the fixed gear bike of frontend javascript frameworks.</p>
+  <entry>
+    <title><![CDATA[Thorax is Awesome]]></title>
+    <link href="http://blog.peterdecroos.com/2013/07/05/thorax-is-awesome/"/>
+    <id>http://blog.peterdecroos.com/2013/07/05/thorax-is-awesome/</id>
+    <published>2013-07-05T20:45:00.000Z</published>
+    <updated>2014-10-08T00:54:22.000Z</updated>
+    <content type="html"><![CDATA[<p>I like Backbone.js a lot. It’s a fantastic utlity library for building your own best of breed javascript applications. It is much more configurable than Angular or Ember - both of which make numerous assumptions about the nature of your app, which may or may not lead to frustration when working with a legacy codebase. While you certainly won’t be cranking out apps as quickly as you would in more magical frameworks, Backbone gives you enough to get started. It stays slim in features to avoid stepping on your toes. Backbone is the fixed gear bike of frontend javascript frameworks.</p>
 <p>I recommend anyone new to Backbone build a few projects to learn it. In practice, I don’t recommend using Backbone alone for building out a full mvc system. Its missing a few really important features that you would have to implement yourself.</p>
 <h2 id="Enter_Thorax">Enter Thorax</h2>
 <p>In the world of Backbone extensions, there are three major players, Marionette, Thorax, and Chaplain. I haven’t looked at Chaplain and I found Marionette heavy for my needs. Thorax on the other hand, was a breath of fresh air. I especially loved the<a href="http://handlebarsjs.com" target="_blank" rel="external">handlebars.js</a> templates integration.</p>
@@ -279,51 +451,22 @@
 <p>Finally, the template option that was passed into the instantiation of layoutView is optional. By default, Thorax wraps the layout in a div tag. We can customize the layoutView by giving it a template and using the layout-element helper in that template.</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">script</span> <span class="attribute">id</span>=<span class="value">"appLayout"</span> <span class="attribute">type</span>=<span class="value">"handlebars/template"</span>&gt;</span><span class="javascript"></span></div><div class="line"></div><div class="line">  {{layout-element tag=<span class="string">"div"</span> id=<span class="string">"currentContext"</span> <span class="keyword">class</span>=<span class="string">"container"</span>}}</div><div class="line"><span class="tag">&lt;/<span class="title">script</span>&gt;</span></div></pre></td></tr></table></figure>
 
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="http://blog.peterdecroos.com/2013/07/05/thorax-is-awesome/" data-id="63vg5xrdp111fbic" class="article-share-link" data-share="baidu">Share</a>
-      
-
-      
-
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-backbone-primer" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/06/02/backbone-primer/" class="article-date">
-  <time datetime="2013-06-02T21:42:00.000Z" itemprop="datePublished">Jun 2 2013</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>I like Backbone.js a lot. It’s a fantastic utlity library for building your own best of breed javascript applications. It is much more co]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/javascript-backbone-js-models-mvc/">javascript backbone.js models mvc</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="backbone thorax defineProperty" scheme="http://blog.peterdecroos.com/categories/backbone-thorax-defineProperty/"/>
     
-    
-      <header class="article-header">
-        
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/06/02/backbone-primer/">Backbone, a short primer - Part 1: Models and Events</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Its been a few months since I’ve started using backbone on my personal projects. Its a great library for rolling out MVC structure into your application but the learning curve is pretty brutal.</p>
+  <entry>
+    <title><![CDATA[Backbone, a short primer - Part 1: Models and Events]]></title>
+    <link href="http://blog.peterdecroos.com/2013/06/02/backbone-primer/"/>
+    <id>http://blog.peterdecroos.com/2013/06/02/backbone-primer/</id>
+    <published>2013-06-02T21:42:00.000Z</published>
+    <updated>2014-10-08T00:54:14.000Z</updated>
+    <content type="html"><![CDATA[<p>Its been a few months since I’ve started using backbone on my personal projects. Its a great library for rolling out MVC structure into your application but the learning curve is pretty brutal.</p>
 <p>The first step to really understanding the backbone.js framework.</p>
 <h3 id="There_is_no_framework">There is no framework</h3>
 <p>Seriously, get it out of your head entirely that backbone is a frameowrk. Its far too minimal. Backbone is more like a toolkit library for contructing MVC frameworks.</p>
@@ -357,51 +500,22 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> CommentHolder = Backbone.Model.extend({</div><div class="line">  initialize: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="comment">/* We set up event listeners here</span></div><div class="line">      the first argument is message being fired</div><div class="line">      the second is the function to be invoked</div><div class="line">      the third is the context for function to be called in</div><div class="line">    */</div><div class="line">    <span class="keyword">this</span>.get(<span class="string">'comment'</span>).on(<span class="string">'all'</span>, <span class="keyword">this</span>.bubble, <span class="keyword">this</span>);</div><div class="line">  },</div><div class="line">  bubble: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="comment">// apply is used to propegate all possible arguments</span></div><div class="line">    <span class="comment">// that can be coming form multiple events.</span></div><div class="line">    <span class="keyword">this</span>.trigger.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>); <span class="comment">//trigger is a backbone function</span></div><div class="line">  }</div><div class="line">})</div></pre></td></tr></table></figure>
 
 <p><a href="http://backbonejs.org/#Events-catalog" target="_blank" rel="external">‘all’</a> is a backbone defined catch all event that sends along the name of the event as the first argument. The model will listen to its comment and broadcast any messages it recieves to any who would hear.</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="http://blog.peterdecroos.com/2013/06/02/backbone-primer/" data-id="eh1djz3mtedxivvf" class="article-share-link" data-share="baidu">Share</a>
-      
-
-      
-
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-processes-in-node-pid-to-kill" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/04/12/processes-in-node-pid-to-kill/" class="article-date">
-  <time datetime="2013-04-12T17:22:00.000Z" itemprop="datePublished">Apr 12 2013</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Its been a few months since I’ve started using backbone on my personal projects. Its a great library for rolling out MVC structure into y]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/node-process-fork/">node process fork</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="javascript backbone.js models mvc" scheme="http://blog.peterdecroos.com/categories/javascript-backbone-js-models-mvc/"/>
     
-    
-      <header class="article-header">
-        
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/04/12/processes-in-node-pid-to-kill/">processes in node Part 2: pid to kill</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Internally within node, every object has an id that V8 uses to keep track of these object. In the same way, when we invoke a request to the operating system to create a process, the operating system loads the program into memory and assigns it an id which can be used to track the running program throughout its life cycle.</p>
+  <entry>
+    <title><![CDATA[processes in node Part 2: pid to kill]]></title>
+    <link href="http://blog.peterdecroos.com/2013/04/12/processes-in-node-pid-to-kill/"/>
+    <id>http://blog.peterdecroos.com/2013/04/12/processes-in-node-pid-to-kill/</id>
+    <published>2013-04-12T17:22:00.000Z</published>
+    <updated>2014-10-08T00:54:02.000Z</updated>
+    <content type="html"><![CDATA[<p>Internally within node, every object has an id that V8 uses to keep track of these object. In the same way, when we invoke a request to the operating system to create a process, the operating system loads the program into memory and assigns it an id which can be used to track the running program throughout its life cycle.</p>
 <p>The id this process is assigned is called a pid and it can be accessed from within node via process</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> pid = process.pid; <span class="built_in">console</span>.log(pid); </div></pre></td></tr></table></figure>
 
@@ -445,51 +559,22 @@
 <li><a href="http://www.amazon.com/The-Linux-Programming-Interface-Handbook/dp/1593272200/ref=sr_1_1?ie=UTF8&amp;qid=1366589402&amp;sr=8-1&amp;keywords=linux+programming+interface" target="_blank" rel="external">The linux Programming Interface</a></li>
 </ul>
 <p>Signals are a primitive pipeline for relaying messages. If you are looking to build some form of complex communication pipeline between individual processes, you are better off doing so over tcp. There are frameworks that facilitate this such as <a href="http://www.zeromq.org/" target="_blank" rel="external">zeromq</a> with an excellent <a href="https://github.com/JustinTulloss/zeromq.node" target="_blank" rel="external">node binding available</a>.</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="http://blog.peterdecroos.com/2013/04/12/processes-in-node-pid-to-kill/" data-id="nvpa95dh1hvkk2hu" class="article-share-link" data-share="baidu">Share</a>
-      
-
-      
-
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-processes-in-node-introduction" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/04/11/processes-in-node-introduction/" class="article-date">
-  <time datetime="2013-04-11T21:26:00.000Z" itemprop="datePublished">Apr 11 2013</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Internally within node, every object has an id that V8 uses to keep track of these object. In the same way, when we invoke a request to t]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/node-javascript-systems-process/">node javascript systems process</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="node process fork" scheme="http://blog.peterdecroos.com/categories/node-process-fork/"/>
     
-    
-      <header class="article-header">
-        
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/04/11/processes-in-node-introduction/">Proceses in node part 1: introduction to processes</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>As a language made to exist within the browser, javascript did not originally<br>come with a way to do process process related tasks. Until Chrome, browser based<br>javascript was running within the same process as the browser.</p>
+  <entry>
+    <title><![CDATA[Proceses in node part 1: introduction to processes]]></title>
+    <link href="http://blog.peterdecroos.com/2013/04/11/processes-in-node-introduction/"/>
+    <id>http://blog.peterdecroos.com/2013/04/11/processes-in-node-introduction/</id>
+    <published>2013-04-11T21:26:00.000Z</published>
+    <updated>2014-10-08T00:10:15.000Z</updated>
+    <content type="html"><![CDATA[<p>As a language made to exist within the browser, javascript did not originally<br>come with a way to do process process related tasks. Until Chrome, browser based<br>javascript was running within the same process as the browser.</p>
 <p>In Chrome, every tab runs in its own process. Consequently, your javascript on any given<br>page runs in its own process. Now that node has brought javascript into the server and far from<br>the restrictive confines of the browser, We can do intersting things like run other programs from node.</p>
 <h3 id="What_is_a_process?">What is a process?</h3>
 <p>Much like the relationship between a Constructor function + its prototypye and the<br>object created by invoking the <em>new</em> keyword, a process is an operating system level invocation<br>of some program.</p>
@@ -508,51 +593,22 @@
 <p>For us nodesters, the picture gets a bit more complicated. The computer loads up the program instructions<br>we affectionatly know as node and loads it into memory. From there, the node program as a static set of<br>bits on the hardrive becomes an almost living thing that loads your javascript into memory and run it!</p>
 <p>To clarify, the process running when you run your node program is an instance of the node program. You can<br>have several node instances running in memory. They can even all serve http requests as long as they are<br>not trying to bind to the same port.</p>
 <p>Understanding processes is incredibly useful. In Ruby, processes forking is used heavily in the design of<br><a href="http://unicorn.bogomips.org/" target="_blank" rel="external">unicorn</a>. Services like nodejitsu and heroku utilize smart people who understand<br>how processes work to architect systems that run and manage your code on the cloud. More importantly, node code<br>can only run on one processor at any given time but by using features such as <em>fork</em>, you can set up a master<br>node process that delegates tasks to subprocesses it spawns yourself. Since node processes are so<br>lightweight, you could concievably run hundreds on your system at the same time.</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="http://blog.peterdecroos.com/2013/04/11/processes-in-node-introduction/" data-id="7bk36d0z8g1c8sp6" class="article-share-link" data-share="baidu">Share</a>
-      
-
-      
-
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-on-this-protototypes-and-dunderheads" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/03/31/on-this-protototypes-and-dunderheads/" class="article-date">
-  <time datetime="2013-04-01T06:34:00.000Z" itemprop="datePublished">Mar 31 2013</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>As a language made to exist within the browser, javascript did not originally<br>come with a way to do process process related tasks. Unt]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Javascript-prototypes/">Javascript, prototypes</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="node javascript systems process" scheme="http://blog.peterdecroos.com/categories/node-javascript-systems-process/"/>
     
-    
-      <header class="article-header">
-        
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/03/31/on-this-protototypes-and-dunderheads/">On this, protototypes, and dunderheads</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Of all the stranger than fiction things I have seen, I can’t say I have experienced as blatant a miscarriage of conceptual understanding as I have with javascript’s object system. (Ok, I might be exagerating just a little…)</p>
+  <entry>
+    <title><![CDATA[On this, protototypes, and dunderheads]]></title>
+    <link href="http://blog.peterdecroos.com/2013/03/31/on-this-protototypes-and-dunderheads/"/>
+    <id>http://blog.peterdecroos.com/2013/03/31/on-this-protototypes-and-dunderheads/</id>
+    <published>2013-04-01T06:34:00.000Z</published>
+    <updated>2014-10-08T00:53:48.000Z</updated>
+    <content type="html"><![CDATA[<p>Of all the stranger than fiction things I have seen, I can’t say I have experienced as blatant a miscarriage of conceptual understanding as I have with javascript’s object system. (Ok, I might be exagerating just a little…)</p>
 <p>Javascript is an interesting language. It is quite powerful when paired with appropriate libraries like <a href="http://underscorejs.org/" target="_blank" rel="external">underscore</a>. Its prototypical inheritence model is a mindblowlingly powerful reductionist critique of classical inheritance. In the right hands, functions become lego pieces that can be glued onto objects in staggeringly flexible ways.</p>
 <h3 id="On_“this”">On “this”</h3>
 <p>Lets take an object</p>
@@ -597,196 +653,64 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">myObject1 = { foo: <span class="string">'bar'</span>, num: <span class="number">1</span> }</div><div class="line"></div><div class="line">myObject2 = { foo: <span class="string">'manshu'</span>, getFoo : <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{ <span class="keyword">return</span> <span class="keyword">this</span>.foo; } inc: <span class="function"><span class="keyword">function</span><span class="params">(num)</span> </span>{ <span class="keyword">this</span>.num += num; <span class="keyword">return</span> <span class="keyword">this</span>.num; } }</div><div class="line"></div><div class="line"><span class="comment">//errors out because it doesn't have a getFoo() method myObject1.getFoo();</span></div><div class="line"></div><div class="line">myObject2.getFoo() <span class="comment">// =&gt; 'manshu'</span></div><div class="line"></div><div class="line"><span class="comment">//heres where is gets interesting myObject2.getsFoo.call(myObject1) // =&gt; 'bar'</span></div><div class="line"></div><div class="line"><span class="comment">//this one errors because myObject2 does not have a num attribute myObject2.inc() // badd</span></div><div class="line"></div><div class="line">myObject2.inc.call(myObject1, <span class="number">1</span>); <span class="comment">//sets myObject1.num to 2</span></div><div class="line"></div><div class="line"><span class="comment">//apply does the same with the arguments in an array myObject2.inc.apply(myObject1, [1]); // myObject1.num is now 3!!</span></div></pre></td></tr></table></figure>
 
 <p>Now we’re ready for how to create inheritence chains in javascript! (that article is comming soon.)</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="http://blog.peterdecroos.com/2013/03/31/on-this-protototypes-and-dunderheads/" data-id="nd6jnv80vtzk5f5r" class="article-share-link" data-share="baidu">Share</a>
-      
-
-      
-
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-quicksort" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/02/14/quicksort/" class="article-date">
-  <time datetime="2013-02-15T02:49:00.000Z" itemprop="datePublished">Feb 14 2013</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Of all the stranger than fiction things I have seen, I can’t say I have experienced as blatant a miscarriage of conceptual understanding ]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/javascript-algorithms-sorting/">javascript algorithms sorting</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="Javascript, prototypes" scheme="http://blog.peterdecroos.com/categories/Javascript-prototypes/"/>
     
-    
-      <header class="article-header">
-        
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/02/14/quicksort/">Quicksort Algorithm in Javascript</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Here’s a basic Quicksort algorithm. You can call this code using Node.js</p>
+  <entry>
+    <title><![CDATA[Quicksort Algorithm in Javascript]]></title>
+    <link href="http://blog.peterdecroos.com/2013/02/14/quicksort/"/>
+    <id>http://blog.peterdecroos.com/2013/02/14/quicksort/</id>
+    <published>2013-02-15T02:49:00.000Z</published>
+    <updated>2014-10-08T00:53:36.000Z</updated>
+    <content type="html"><![CDATA[<p>Here’s a basic Quicksort algorithm. You can call this code using Node.js</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Sort = <span class="built_in">require</span>(<span class="string">'./quicksort.js'</span>);</div><div class="line">list = [<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>,<span class="number">2</span>, <span class="number">5</span>];</div><div class="line"><span class="keyword">var</span> sorted = Sort(list, <span class="function"><span class="keyword">function</span><span class="params">(a, b)</span> </span>{</div><div class="line">	<span class="keyword">if</span> (a &gt; b) {</div><div class="line">		<span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">	} <span class="keyword">else</span> <span class="keyword">if</span> (a === b) {</div><div class="line">		<span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">	} <span class="keyword">else</span> {</div><div class="line">		<span class="keyword">return</span> -<span class="number">1</span>;</div><div class="line">	}</div><div class="line">});</div></pre></td></tr></table></figure>
 
 <p>have fun and hope this proves useful to somebody!</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//quicksort.js</span></div><div class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span><span class="params">(list1, compareFunction)</span> </span>{</div><div class="line">    <span class="keyword">var</span> list = list1;</div><div class="line">    <span class="keyword">var</span> cmp = compareFunction;</div><div class="line"></div><div class="line">    <span class="keyword">var</span> swap = <span class="function"><span class="keyword">function</span><span class="params">(i, j)</span> </span>{</div><div class="line">        <span class="comment">/* swaps the indexer A[i] and A[j] */</span></div><div class="line">        <span class="keyword">var</span> _i = list[i];</div><div class="line">        <span class="keyword">var</span> _j = list[j];</div><div class="line">        list[j] = _i;</div><div class="line">        list[i] = _j;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">var</span> partition = <span class="function"><span class="keyword">function</span><span class="params">(p, r)</span> </span>{</div><div class="line">        <span class="comment">/* the partition function goes through the array</span></div><div class="line">         *  list[</div><div class="line">         */</div><div class="line">        <span class="keyword">var</span> r = r;</div><div class="line">        <span class="keyword">var</span> i = p; <span class="comment">//on intiial pass, p is 0</span></div><div class="line"></div><div class="line">        <span class="comment">/* for each entry i where A[i] is less than A[r-1]</span></div><div class="line">         * where r-1 is the index of the Penultimate item</div><div class="line">         */</div><div class="line">        <span class="comment">//from j = 0 to j = r-1</span></div><div class="line">        <span class="comment">//exchange A[i] and A[j] if A[j] &gt; A[r]</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> j = p; j &lt; r; j++) {</div><div class="line">            <span class="comment">//console.log("lets try this ", list);</span></div><div class="line">            <span class="comment">//console.log("i : " + i + " j : " + j);</span></div><div class="line">            <span class="keyword">if</span> (cmp(list[j],list[r]) &lt;= <span class="number">0</span> ) {</div><div class="line">                <span class="comment">//swap them!! and then increment i</span></div><div class="line">                swap(i, j);</div><div class="line">                i++;</div><div class="line">            }</div><div class="line">        }</div><div class="line"></div><div class="line">        swap(i, r);</div><div class="line">        <span class="keyword">return</span> i;</div><div class="line"></div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">var</span> quickSort = <span class="function"><span class="keyword">function</span><span class="params">(p, r)</span> </span>{</div><div class="line">        <span class="keyword">if</span> (p &lt; r) {</div><div class="line">            q = partition(p, r);</div><div class="line">            quickSort(p, q - <span class="number">1</span>);</div><div class="line">            quickSort(q + <span class="number">1</span>, r)</div><div class="line"></div><div class="line">        }</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">var</span> initialize = <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">        quickSort(<span class="number">0</span>, list1.length-<span class="number">1</span>);</div><div class="line"></div><div class="line">    }</div><div class="line">    <span class="comment">//compute the sorted value</span></div><div class="line">    initialize();</div><div class="line"></div><div class="line">    <span class="keyword">return</span> list1;</div><div class="line"></div><div class="line">}</div></pre></td></tr></table></figure>
 
-
-      
-    </div>
-    <footer class="article-footer">
-      
-        <a data-url="http://blog.peterdecroos.com/2013/02/14/quicksort/" data-id="td4d961rpo9ikiqr" class="article-share-link" data-share="baidu">Share</a>
-      
-
-      
-
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-  
-</section>
-        
-          <aside id="sidebar">
-  
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Here’s a basic Quicksort algorithm. You can call this code using Node.js</p>
+<figure class="highlight javascript"><table><tr><td class="g]]>
+    </summary>
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Javascript-prototypes/">Javascript, prototypes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/algorithms-sorting-python/">algorithms sorting python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-javascript/">backbone javascript</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/backbone-thorax-defineProperty/">backbone thorax defineProperty</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/functional-programming-ecmascript6-javascript-generators/">functional-programming ecmascript6 javascript generators</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/generators-promises/">generators promises</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-algorithms-sorting/">javascript algorithms sorting</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-backbone-js-models-mvc/">javascript backbone.js models mvc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript-scoping/">javascript scoping</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/koa-generators-javascript-harmony-ecmascript6/">koa generators javascript harmony ecmascript6</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-javascript-systems-process/">node javascript systems process</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node-process-fork/">node process fork</a><span class="category-list-count">1</span></li></ul>
-    </div>
-  </div>
-
-  
+      <category term="javascript algorithms sorting" scheme="http://blog.peterdecroos.com/categories/javascript-algorithms-sorting/"/>
     
+  </entry>
   
+  <entry>
+    <title><![CDATA[sorting algorithms in python - part 1]]></title>
+    <link href="http://blog.peterdecroos.com/2012/09/10/sorting-algorithms-in-python/"/>
+    <id>http://blog.peterdecroos.com/2012/09/10/sorting-algorithms-in-python/</id>
+    <published>2012-09-10T07:11:00.000Z</published>
+    <updated>2014-10-08T00:53:20.000Z</updated>
+    <content type="html"><![CDATA[<p>I’m in a couple of weeks into Robert Sedgewick’s class on algorithms currently running on <a href="https://www.coursera.org/course/algs4partI" target="_blank" rel="external">coursera</a>. To round off the weekend I decided to reimpliment some of the classic sortting algorithms in python.</p>
+<p>The compare function</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">   <span class="function"><span class="keyword">def</span> <span class="title">cmp</span><span class="params">(a, b)</span>:</span></div><div class="line">       <span class="keyword">if</span> (a == b):</div><div class="line">           <span class="keyword">return</span> <span class="number">0</span></div><div class="line">       <span class="keyword">elif</span> (a &gt; b):</div><div class="line">           <span class="keyword">return</span> <span class="number">1</span></div><div class="line">       <span class="keyword">else</span>:</div><div class="line">           <span class="keyword">return</span> -<span class="number">1</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">swap</span><span class="params">(i, j, array)</span>:</span></div><div class="line">    swapv = array[i]</div><div class="line">    array[i] = array[j]</div><div class="line">    array[j] = swapv</div><div class="line">    <span class="keyword">return</span> array</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">biggest</span><span class="params">(array)</span>:</span></div><div class="line">    i = <span class="number">0</span></div><div class="line">    biggest_val = array[<span class="number">0</span>]</div><div class="line">    biggest_index = i</div><div class="line">    <span class="keyword">while</span>(i &lt; len(array)):</div><div class="line">        <span class="keyword">if</span> (array[i] &gt; biggest_val):</div><div class="line">            biggest_val = array[i]</div><div class="line">            biggest_index = i</div><div class="line">        i = i + <span class="number">1</span></div><div class="line">    <span class="keyword">return</span> (biggest_index, biggest_val)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">minv</span><span class="params">(array, start_index)</span>:</span></div><div class="line">    i = start_index</div><div class="line">    min_val = array[start_index]</div><div class="line">    min_index = i</div><div class="line">    <span class="keyword">while</span>(i &lt; len(array)):</div><div class="line">        <span class="keyword">if</span> (array[i] &lt; min_val):</div><div class="line">            min_val = array[i]</div><div class="line">            min_index = i</div><div class="line">        i = i + <span class="number">1</span></div><div class="line">    <span class="keyword">return</span> (min_index, min_val)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">min</span><span class="params">(array)</span>:</span></div><div class="line">    <span class="keyword">return</span> minv(array, <span class="number">0</span>)</div></pre></td></tr></table></figure>
+
+<p>Selection Sort</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">selectionSort</span><span class="params">(array)</span>:</span></div><div class="line">    i = <span class="number">0</span></div><div class="line">    array1 = array</div><div class="line">    <span class="keyword">while</span> (i &lt; len(array1)):</div><div class="line">        array1 = swap(i, minv(array1, i)[<span class="number">0</span>], array1)</div><div class="line">        i = i + <span class="number">1</span></div><div class="line">    <span class="keyword">return</span> array1</div></pre></td></tr></table></figure>
+
+<p>Insertion sort is just a specialized case of shellsort so I created a base composite function that encapsulates the core of both algorithms.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">gapSort</span><span class="params">(array, gap)</span>:</span></div><div class="line">    <span class="string">"""helper function to aid insertion sort and shell sort"""</span></div><div class="line">    i = <span class="number">0</span></div><div class="line">    array1 = array</div><div class="line">    <span class="keyword">while</span> (i &lt; len(array)):</div><div class="line">        <span class="keyword">if</span> (i &gt; <span class="number">0</span>):</div><div class="line">            j = i</div><div class="line">            <span class="keyword">while</span> ((cmp(array1[j], array1[j-gap]) &lt; <span class="number">0</span>) <span class="keyword">and</span> (j != <span class="number">0</span> ) ):</div><div class="line">                <span class="comment">#while object at i is less than the one before it</span></div><div class="line">                swap(j, j-gap, array1)</div><div class="line">                j = j - <span class="number">1</span></div><div class="line">        i = i + <span class="number">1</span></div><div class="line">    <span class="keyword">return</span> array1</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">insertionSort</span><span class="params">(array)</span>:</span></div><div class="line">    <span class="keyword">return</span> gapSort(array, <span class="number">1</span>)</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">shellSort</span><span class="params">(array)</span>:</span></div><div class="line">    <span class="string">"""sorts using the shellsort algorithm"""</span></div><div class="line">    vals = [<span class="number">3</span>*h+<span class="number">1</span> <span class="keyword">for</span> h <span class="keyword">in</span> range(len(array)/<span class="number">3</span>)][::-<span class="number">1</span>]</div><div class="line">    <span class="keyword">for</span> val <span class="keyword">in</span> vals:</div><div class="line">        array = gapSort(array, val)</div><div class="line">    <span class="keyword">return</span> array</div></pre></td></tr></table></figure>
+
+<p>Finally, Merge sort; Running in N log(N), it is the only algorithms other than Quicksort worth using on large datasets.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">merge</span><span class="params">(array, p, q, r)</span>:</span></div><div class="line"><span class="string">"""The merge function"""</span></div><div class="line">    <span class="keyword">if</span> ((r - p) &gt; <span class="number">1</span>):</div><div class="line">        left = array[p:q+<span class="number">1</span>]</div><div class="line">        loggr(<span class="string">"left"</span> + str(left))</div><div class="line">        right = array[q+<span class="number">1</span>:r+<span class="number">1</span>]</div><div class="line">        loggr(<span class="string">"right"</span>+ str(right))</div><div class="line">        left.append(<span class="string">'c'</span>)</div><div class="line">        right.append(<span class="string">'c'</span>)</div><div class="line">        i = <span class="number">0</span></div><div class="line">        j = <span class="number">0</span></div><div class="line">        <span class="keyword">for</span> k <span class="keyword">in</span> range(p, r+<span class="number">1</span>):</div><div class="line">            <span class="keyword">if</span> left[i] &lt;= right[j]:</div><div class="line">                array[k] = left[i]</div><div class="line">                i = i + <span class="number">1</span></div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                array[k] = right[j]</div><div class="line">                j = j + <span class="number">1</span></div><div class="line">    <span class="keyword">elif</span> ((r - p) == <span class="number">1</span> ):</div><div class="line">        <span class="keyword">if</span> (array[r] &lt; array[p]):</div><div class="line">            i = array[p]</div><div class="line">            j = array[r]</div><div class="line">            array[p] = j</div><div class="line">            array[r] = i</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">mergeSort</span><span class="params">(array)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sort</span><span class="params">(p, r, msg)</span>:</span></div><div class="line">        <span class="keyword">if</span> p &lt; r:</div><div class="line">            q = (p+r)/<span class="number">2</span></div><div class="line">            <span class="keyword">if</span> (r - p) &gt; <span class="number">1</span>:</div><div class="line">                sort(p, q, <span class="string">"in left array"</span>)</div><div class="line">                sort(q+<span class="number">1</span>, r, <span class="string">"right array"</span>)</div><div class="line">            merge(array, p, q, r)</div><div class="line">    sort(<span class="number">0</span>, len(array)-<span class="number">1</span>, <span class="string">"root"</span>)</div><div class="line">    <span class="keyword">return</span> array</div></pre></td></tr></table></figure>
+
+<p>Quick sort and its probabilistic guarantee of fast enough run time strikes me as the most mathematically perverse form of black magic. Beautiful in the inherent underlying fabric of its utility. I’ll cover that when I get to part 2.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>I’m in a couple of weeks into Robert Sedgewick’s class on algorithms currently running on <a href="https://www.coursera.org/course/algs4p]]>
+    </summary>
     
-  
+      <category term="algorithms sorting python" scheme="http://blog.peterdecroos.com/categories/algorithms-sorting-python/"/>
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02/">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01/">January 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/07/">July 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/06/">June 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/04/">April 2013</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/03/">March 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/02/">February 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/09/">September 2012</a><span class="archive-list-count">1</span></li></ul>
-    </div>
-  </div>
-
+  </entry>
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2014/02/08/functional-programming-with-ecmascript6-generators/">Functional programming with ecmascript6 generators</a>
-          </li>
-        
-          <li>
-            <a href="/2014/02/01/koa-zero-to-todo-list/">koa: zero to todo list</a>
-          </li>
-        
-          <li>
-            <a href="/2014/01/22/javascript-generators-first-impressions/">javascript generators: first impressions</a>
-          </li>
-        
-          <li>
-            <a href="/2014/01/06/lets-build-a-backbone-based-framework/">lets build a backbone based framework!!</a>
-          </li>
-        
-          <li>
-            <a href="/2013/07/16/lexically-scope-like-a-boss/">How to lexically scope like a boss</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Links</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="http://xiguabaobao.com" target="_blank">主题作者</a>
-          </li>
-        
-          <li>
-            <a href="http://reqianduan.com" target="_blank">热前端</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2014 Peter de Croos<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-      .
-      Theme by <a href="https://github.com/xiangming/landscape-plus" target="_blank">Landscape-plus</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<!-- 百度分享 start -->
-
-<div id="article-share-box" class="article-share-box">
-  <div id="bdshare" class="bdsharebuttonbox article-share-links">
-    <a class="article-share-weibo" data-cmd="tsina" title="分享到新浪微博"></a>
-    <a class="article-share-weixin" data-cmd="weixin" title="分享到微信"></a>
-    <a class="article-share-qq" data-cmd="sqq" title="分享到QQ"></a>
-    <a class="article-share-renren" data-cmd="renren" title="分享到人人网"></a>
-    <a class="article-share-more" data-cmd="more" title="更多"></a>
-  </div>
-</div>
-<script>window._bd_share_config={"common":{},"share":{"bdCustomStyle":"nocss.css"}};with(document)0[(getElementsByTagName("head")[0]||body).appendChild(createElement("script")).src="http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion="+~(-new Date()/36e5)];</script>
-
-<!-- 百度分享 end -->
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
-
-
-<script src="/js/script.js" type="text/javascript"></script>
-
-  </div>
-</body>
-</html>
+</feed>

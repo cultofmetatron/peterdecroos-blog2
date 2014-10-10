@@ -6,14 +6,12 @@ comments: true
 categories: functional-programming ecmascript6 javascript generators
 ---
 
-The web is abuzz right now with ecmascript 6 on the horizon. If you get node 0.11,
-you can use it server side already. Once of the big features I'm excited about 
+The web is abuzz right now with ecmascript 6 on the horizon. If you get node 0.11, you can use it server side already. Once of the big features I'm excited about 
 are generators.
 
-I've [blogged about them previously](http://blog.peterdecroos.com/blog/2014/01/22/javascript-generators-first-impressions/)
-Alas, I've only found nothing out there on the web that covers anything beyond basic
-instatiation and invocation. With just that to go on, it was hard for me to initially see
-the hype. A few days ago, I had an appifany. 
+I've [blogged about them previously](http://blog.peterdecroos.com/blog/2014/01/22/javascript-generators-first-impressions/) 
+Alas, I've only found nothing out there on the web that covers anything beyond basic instatiation and invocation. 
+With just that to go on, it was hard for me to initially see the hype. A few days ago, I had an appifany. 
 
 Generators are first class objects. Like functions, they can be composed from smaller parts. Therefore,
 much of we know about functions can be applied to generators!
